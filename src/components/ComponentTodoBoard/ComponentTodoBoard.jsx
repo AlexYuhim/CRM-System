@@ -7,8 +7,9 @@ export function ComponentTodoBoard() {
   const TODO_API = 'https://easydev.club/api/v1';
   const [todoList, setTodoList] = useState([]);
   const [statusTodos, setStatusTodos] = useState('all');
-  const [countTodos, setCounTodos] = useState({});
+  const [countTodos, setCountTodos] = useState({});
   const [addTodoValue, setAddTodoValue] = useState('');
+  const [editValue, setEditValue] = useState('');
 
   // отслеживаем изминение статуса списка задач
   useEffect(() => {
@@ -20,15 +21,14 @@ export function ComponentTodoBoard() {
     try {
       const response = await fetch(`${TODO_API}/todos?filter=${statusTodos}`);
       const data = await response.json();
-      setCounTodos(data.info);
+      setCountTodos(data.info);
       setTodoList(data.data);
-      console.log('data', data);
     } catch (error) {
       console.log('Ошибка запроса данных', error);
     }
   }
-  console.log('countTodos', countTodos);
-  console.log('todoList', todoList);
+  // console.log('countTodos', countTodos);
+  // console.log('todoList', todoList);
 
   //добавляю задачу
   async function fetchAddTodo() {
@@ -90,6 +90,27 @@ export function ComponentTodoBoard() {
     }
   }
 
+  // добавдяю флаг в объект для редактирования
+  const handlerEditTodo = (id, title) => {
+    console.log('title', title);
+
+    setTodoList(
+      todoList.map((todo) =>
+        todo.id === id ? { ...todo, isEdit: true } : todo
+      )
+    );
+    setEditValue(title);
+  };
+  // console.log('todoListUp', todoList);
+
+  function handlerOnChangeEditTodo(e) {
+    console.log('e', e);
+    setEditValue(e);
+  }
+
+  function cancelTodoEdit() {
+    featchGetTodos();
+  }
   return (
     <>
       <h2>доска для размещения todo</h2>
@@ -104,7 +125,10 @@ export function ComponentTodoBoard() {
           setStatusTodos={setStatusTodos}
         />
         <ComponentTodoList
-          countTodos={countTodos}
+          editValue={editValue}
+          handlerOnChangeEditTodo={handlerOnChangeEditTodo}
+          cancelTodoEdit={cancelTodoEdit}
+          handlerEditTodo={handlerEditTodo}
           toggleStatusTodo={toggleStatusTodo}
           todoList={todoList}
           deleteTodo={deleteTodo}

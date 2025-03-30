@@ -3,7 +3,7 @@ export function ComponentTodo({
   todo,
   deleteTodo,
   toggleStatusTodo,
-  countTodos,
+  handlerEditTodo,
 }) {
   const { title, id, isDone } = todo;
 
@@ -15,8 +15,8 @@ export function ComponentTodo({
         type="checkbox"
         onClick={() => toggleStatusTodo(id, isDone)}
       />
-      <div className={isDone ? style.completed_todo : ''}>{title}</div>
-      <button>edit</button>
+      <div className={isDone ? style.completed_todo : undefined}>{title}</div>
+      <button onClick={() => handlerEditTodo(id, title)}>edit</button>
       <button onClick={() => deleteTodo(id)}>del</button>
     </div>
   );

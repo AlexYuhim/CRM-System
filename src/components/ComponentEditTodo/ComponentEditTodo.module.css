@@ -1,9 +1,5 @@
-.todo_wr {
+.todo_edit_wr {
   display: grid;
   justify-content: space-between;
   grid-template-columns: 50px 1fr 50px 50px;
-}
-
-.completed_todo {
-  text-decoration: line-through;
 }
