@@ -1,16 +1,16 @@
-const CopmponentInputTodo = ({ todo, setTodo, addTodo }) => {
+const CopmponentInputTodo = ({ value, setAddTodoValue, fetchAddTodo }) => {
   return (
     <div className="input-wr">
       <input
         type="text"
         placeholder="add todo"
         name="todo"
-        value={todo}
+        value={value}
         onChange={(e) => {
-          setTodo(e.target.value);
+          setAddTodoValue(e.target.value);
         }}
       />
-      <button className="add-btn" onClick={addTodo}>
+      <button className="add-btn" onClick={fetchAddTodo}>
         add
       </button>
     </div>

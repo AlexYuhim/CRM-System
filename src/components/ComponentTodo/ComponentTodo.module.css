@@ -1,0 +1,9 @@
+.todo_wr {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.completed_todo {
+  text-decoration: line-through;
+}

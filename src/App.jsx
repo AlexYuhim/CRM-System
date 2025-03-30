@@ -1,11 +1,11 @@
 import './App.css';
-import { ComponentBoard } from './components/ComponentBoard/ComponentBoard';
+import { ComponentTodoBoard } from './components/ComponentTodoBoard/ComponentTodoBoard';
 
 function App() {
   return (
     <>
       <h1>CRM-System</h1>
-      <ComponentBoard />
+      <ComponentTodoBoard />
     </>
   );
 }
