@@ -9,14 +9,17 @@ export function ComponentTodoList({
   cancelTodoEdit,
   handlerOnChangeEditTodo,
   editValue,
+  saveTodo,
+  idForEditValue,
 }) {
   return (
     <div>
       {todoList.map((todo) => {
         return (
           <div key={todo.id}>
-            {todo.isEdit ? (
+            {todo.isEdit && todo.id === idForEditValue ? (
               <ComponentEditTodo
+                saveTodo={saveTodo}
                 editValue={editValue}
                 todo={todo}
                 handlerOnChangeEditTodo={handlerOnChangeEditTodo}

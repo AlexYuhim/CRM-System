@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import CopmponentInputTodo from '../CopmponentInputTodo/CopmponentInputTodo';
+
 import { ComponentTodoList } from '../ComponentTodoList/ComponentTodoList';
 import { ComponentListOfTasks } from '../ComponentListOfTasks/ComponentListOfTasks';
+import { ComponentInputTodo } from '../ComponentInputTodo/ComponentInputTodo';
 
 export function ComponentTodoBoard() {
   const TODO_API = 'https://easydev.club/api/v1';
@@ -10,7 +11,8 @@ export function ComponentTodoBoard() {
   const [countTodos, setCountTodos] = useState({});
   const [addTodoValue, setAddTodoValue] = useState('');
   const [editValue, setEditValue] = useState('');
-
+  const [idForEditValue, setIdForEditValue] = useState('');
+  const REGEXP_VALIDATE_INPUT = /^(?! +$).{2,64}$/;
   // отслеживаем изминение статуса списка задач
   useEffect(() => {
     featchGetTodos();
@@ -27,11 +29,15 @@ export function ComponentTodoBoard() {
       console.log('Ошибка запроса данных', error);
     }
   }
-  // console.log('countTodos', countTodos);
-  // console.log('todoList', todoList);
 
   //добавляю задачу
-  async function fetchAddTodo() {
+  async function fetchAddTodo(evt) {
+    evt.preventDefault();
+    if (!REGEXP_VALIDATE_INPUT.test(addTodoValue.trim())) {
+      alert('Строка должна содержать от 2 до 64  символов ');
+      return;
+    }
+
     const objToSend = {
       title: addTodoValue,
     };
@@ -48,10 +54,11 @@ export function ComponentTodoBoard() {
       const data = await response.json();
 
       setTodoList([...todoList, data]);
-      featchGetTodos();
       setAddTodoValue('');
+      featchGetTodos();
+      console.log('addTodoValue', addTodoValue);
     } catch (error) {
-      console.log('ошибка добавления записи', error);
+      console.log('ошибка добавления задачи', error);
     }
   }
 
@@ -65,7 +72,7 @@ export function ComponentTodoBoard() {
 
       featchGetTodos();
     } catch (error) {
-      console.log('ошибка удаления записи', error);
+      console.log('ошибка удаления задачи', error);
     }
   }
 
@@ -86,36 +93,62 @@ export function ComponentTodoBoard() {
       });
       featchGetTodos();
     } catch (error) {
-      console.log('ошибка добавления записи', error);
+      console.log('ошибка изменения записи', error);
     }
   }
 
-  // добавдяю флаг в объект для редактирования
+  // добавдяю флаг в объект для редактирования задачи
   const handlerEditTodo = (id, title) => {
-    console.log('title', title);
-
     setTodoList(
       todoList.map((todo) =>
         todo.id === id ? { ...todo, isEdit: true } : todo
       )
     );
     setEditValue(title);
+    setIdForEditValue(id);
   };
-  // console.log('todoListUp', todoList);
 
   function handlerOnChangeEditTodo(e) {
-    console.log('e', e);
     setEditValue(e);
   }
 
+  // сброс редактирования
   function cancelTodoEdit() {
     featchGetTodos();
   }
+
+  // отправляю изменения задачи на сервер
+
+  async function saveTodo(id) {
+    if (!REGEXP_VALIDATE_INPUT.test(editValue.trim())) {
+      alert('Строка должна содержать от 2 до 64  символов ');
+      return;
+    }
+
+    const objToSend = {
+      title: editValue,
+    };
+
+    try {
+      await fetch(`${TODO_API}/todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        body: JSON.stringify(objToSend),
+      });
+      featchGetTodos();
+    } catch (error) {
+      console.log('ошибка изменения записи', error);
+    }
+    featchGetTodos();
+  }
+
   return (
     <>
       <h2>доска для размещения todo</h2>
       <div>
-        <CopmponentInputTodo
+        <ComponentInputTodo
           value={addTodoValue}
           setAddTodoValue={setAddTodoValue}
           fetchAddTodo={fetchAddTodo}
@@ -125,6 +158,8 @@ export function ComponentTodoBoard() {
           setStatusTodos={setStatusTodos}
         />
         <ComponentTodoList
+          idForEditValue={idForEditValue}
+          saveTodo={saveTodo}
           editValue={editValue}
           handlerOnChangeEditTodo={handlerOnChangeEditTodo}
           cancelTodoEdit={cancelTodoEdit}
