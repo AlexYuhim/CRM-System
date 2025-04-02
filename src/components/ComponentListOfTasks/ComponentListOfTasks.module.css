@@ -1,0 +1,14 @@
+.wr_count_todo {
+  max-width: 600px;
+  display: flex;
+  justify-content: space-around;
+  margin: 0 auto;
+  width: 50%;
+}
+
+.btn_active {
+  background-color: #5a5aff;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px 15px;
+}

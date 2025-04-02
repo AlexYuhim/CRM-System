@@ -16,9 +16,10 @@ export function ComponentEditTodo({
         value={editValue}
         type="text"
         onChange={(e) => handlerOnChangeEditTodo(e.target.value)}
-      />
+        />
       <button onClick={() => saveTodo(id)}>save</button>
       <button onClick={() => cancelTodoEdit()}>cancel</button>
     </div>
+    
   );
 }

@@ -1,13 +1,31 @@
-export function ComponentListOfTasks({ countTodos, setStatusTodos }) {
+import style from './ComponentListOfTasks.module.css';
+export function ComponentListOfTasks({
+  countTodos,
+  setStatusTodos,
+  statusTodos,
+}) {
   const { all, completed, inWork } = countTodos;
 
   return (
-    <div>
-      <button onClick={() => setStatusTodos('all')}>All: ({all})</button>
-      <button onClick={() => setStatusTodos('completed')}>
+    <div className={style.wr_count_todo}>
+      <button
+        className={statusTodos === 'all' ? `${style.btn_active}` : undefined}
+        onClick={() => setStatusTodos('all')}
+      >
+        All: ({all})
+      </button>
+      <button
+        className={
+          statusTodos === 'completed' ? `${style.btn_active}` : undefined
+        }
+        onClick={() => setStatusTodos('completed')}
+      >
         completed: ({completed})
       </button>
-      <button onClick={() => setStatusTodos('inWork')}>
+      <button
+        className={statusTodos === 'inWork' ? `${style.btn_active}` : undefined}
+        onClick={() => setStatusTodos('inWork')}
+      >
         inWork: ({inWork})
       </button>
     </div>

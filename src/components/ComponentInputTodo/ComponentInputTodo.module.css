@@ -1,0 +1,16 @@
+.input_field_wr form{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 72px;
+}
+
+.input_field_wr input{
+        width: 100%;
+        
+}
+
+.input_field_wr button{
+        width: 150px
+        
+}

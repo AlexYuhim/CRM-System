@@ -1,6 +1,7 @@
+import style from "./ComponentInputTodo.module.css"
 export function ComponentInputTodo({ value, setAddTodoValue, fetchAddTodo }) {
   return (
-    <div className="input-wr">
+    <div className={style.input_field_wr}>
       <form onSubmit={fetchAddTodo}>
         <input
           type="text"

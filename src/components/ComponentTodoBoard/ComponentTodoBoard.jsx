@@ -4,6 +4,8 @@ import { ComponentTodoList } from '../ComponentTodoList/ComponentTodoList';
 import { ComponentListOfTasks } from '../ComponentListOfTasks/ComponentListOfTasks';
 import { ComponentInputTodo } from '../ComponentInputTodo/ComponentInputTodo';
 
+import style from './ComponentTodoBoard.module.css'
+
 export function ComponentTodoBoard() {
   const TODO_API = 'https://easydev.club/api/v1';
   const [todoList, setTodoList] = useState([]);
@@ -145,17 +147,18 @@ export function ComponentTodoBoard() {
   }
 
   return (
-    <>
+    <div className={style.board_todo}>
       <h2>доска для размещения todo</h2>
-      <div>
+        <ComponentListOfTasks
+        statusTodos={statusTodos}
+          countTodos={countTodos}
+          setStatusTodos={setStatusTodos}
+        />
+      <div className={style.group_input_ouyput}>
         <ComponentInputTodo
           value={addTodoValue}
           setAddTodoValue={setAddTodoValue}
           fetchAddTodo={fetchAddTodo}
-        />
-        <ComponentListOfTasks
-          countTodos={countTodos}
-          setStatusTodos={setStatusTodos}
         />
         <ComponentTodoList
           idForEditValue={idForEditValue}
@@ -169,6 +172,6 @@ export function ComponentTodoBoard() {
           deleteTodo={deleteTodo}
         />
       </div>
-    </>
+    </div>
   );
 }

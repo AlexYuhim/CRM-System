@@ -33,6 +33,7 @@ export function ComponentTodoList({
                 toggleStatusTodo={toggleStatusTodo}
               />
             )}
+      <hr/>
           </div>
         );
       })}

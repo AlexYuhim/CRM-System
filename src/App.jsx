@@ -4,8 +4,10 @@ import { ComponentTodoBoard } from './components/ComponentTodoBoard/ComponentTod
 function App() {
   return (
     <>
-      <h1>CRM-System</h1>
-      <ComponentTodoBoard />
+      <h1 className='tile_main'>CRM-System</h1>
+      <div className='app_wr'>
+        <ComponentTodoBoard />
+      </div>
     </>
   );
 }
