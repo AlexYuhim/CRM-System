@@ -12,6 +12,7 @@ export function ComponentTodoBoard() {
   const [todoList, setTodoList] = useState([]);
   const [statusTodos, setStatusTodos] = useState('all');
   const [countTodos, setCountTodos] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   // отслеживаем изминение статуса списка задач
   useEffect(() => {
@@ -20,6 +21,7 @@ export function ComponentTodoBoard() {
 
   // получаю список задач в зависимости от статуса задачи
   async function getData() {
+    setIsLoading((p) => !p);
     try {
       const data = await featchGetTodos(statusTodos);
       setCountTodos(data.info);
@@ -27,10 +29,12 @@ export function ComponentTodoBoard() {
     } catch (error) {
       console.log('Ошибка запроса данных', error);
     }
+    setIsLoading((p) => !p);
   }
 
   return (
     <div className={style.board_todo}>
+      {!isLoading && 'Loading...'}
       <h2>доска для размещения todo</h2>
       <ComponentListOfTasks
         statusTodos={statusTodos}

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import style from './ComponentAddTodo.module.css';
 import { allFetch } from '../../fetchApi/allFetch';
-const REGEXP_VALIDATE_INPUT = /^(?! +$).{2,64}$/;
+import { CONSTANTS } from '../../constants/constants';
+const { REGEXP_VALIDATE_INPUT } = CONSTANTS;
 
 const { fetchAddTodo } = allFetch;
 
