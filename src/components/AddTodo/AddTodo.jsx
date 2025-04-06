@@ -1,18 +1,15 @@
 import { useState } from 'react';
-import style from './ComponentAddTodo.module.css';
-import { allFetch } from '../../fetchApi/allFetch';
-import { CONSTANTS } from '../../constants/constants';
-const { REGEXP_VALIDATE_INPUT } = CONSTANTS;
+import style from './AddTodo.module.css';
+import { REGEXP_VALIDATE_TODO_TITLE } from '@/constants/constants';
+import { fetchAddTodo } from '@/api/allFetch';
 
-const { fetchAddTodo } = allFetch;
-
-export function ComponentAddTodo({ setTodoList, getData, todoList }) {
+export function AddTodo({ getData }) {
   const [addTodoValue, setAddTodoValue] = useState('');
 
   //добавляю задачу
-  async function addTodo(evt) {
-    evt.preventDefault();
-    if (!REGEXP_VALIDATE_INPUT.test(addTodoValue.trim())) {
+  async function addTodo(event) {
+    event.preventDefault();
+    if (!REGEXP_VALIDATE_TODO_TITLE.test(addTodoValue.trim())) {
       alert('Строка должна содержать от 2 до 64  символов ');
       return;
     }
@@ -22,9 +19,7 @@ export function ComponentAddTodo({ setTodoList, getData, todoList }) {
     };
 
     try {
-      const data = await fetchAddTodo(objToSend);
-
-      setTodoList([...todoList, data]);
+      await fetchAddTodo(objToSend);
       setAddTodoValue('');
       getData();
     } catch (error) {
@@ -38,7 +33,7 @@ export function ComponentAddTodo({ setTodoList, getData, todoList }) {
         <input
           type="text"
           placeholder="add todo"
-          title="ошибочка"
+          title="введите задачу"
           name="todo"
           value={addTodoValue}
           onChange={(e) => {

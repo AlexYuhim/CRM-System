@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 
-import { ComponentTodoList } from '../../components/ComponentTodoList/ComponentTodoList';
-import { ComponentListOfTasks } from '../../components/ComponentListOfTasks/ComponentListOfTasks';
-import { ComponentAddTodo } from '../../components/ComponentAddTodo/ComponentAddTodo';
-import { allFetch } from '../../fetchApi/allFetch';
-import style from './ComponentTodoBoard.module.css';
+import style from './TodoBoardPages.module.css';
+import { featchGetTodos } from '@/api/allFetch';
+import { AddTodo } from '@/components/AddTodo/AddTodo';
+import { ListOfTasks } from '@/components/ListOfTasks/ListOfTasks';
+import { TodoList } from '@/components/TodoList/TodoList';
 
-const { featchGetTodos } = allFetch;
-
-export function ComponentTodoBoard() {
+export function TodoBoardPages() {
   const [todoList, setTodoList] = useState([]);
   const [statusTodos, setStatusTodos] = useState('all');
-  const [countTodos, setCountTodos] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [countTodos, setCountTodos] = useState({
+    all: 0,
+    comleted: 0,
+    inWork: 0,
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   // отслеживаем изминение статуса списка задач
   useEffect(() => {
@@ -21,37 +23,37 @@ export function ComponentTodoBoard() {
 
   // получаю список задач в зависимости от статуса задачи
   async function getData() {
-    setIsLoading((p) => !p);
     try {
+      setIsLoading(true);
       const data = await featchGetTodos(statusTodos);
       setCountTodos(data.info);
       setTodoList(data.data);
     } catch (error) {
       console.log('Ошибка запроса данных', error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading((p) => !p);
   }
 
   return (
     <div className={style.board_todo}>
-      {!isLoading && 'Loading...'}
       <h2>доска для размещения todo</h2>
-      <ComponentListOfTasks
+      <ListOfTasks
         statusTodos={statusTodos}
         countTodos={countTodos}
         setStatusTodos={setStatusTodos}
       />
       <div className={style.group_input_ouyput}>
-        <ComponentAddTodo
-          setTodoList={setTodoList}
-          getData={getData}
-          todoList={todoList}
-        />
-        <ComponentTodoList
-          todoList={todoList}
-          setTodoList={setTodoList}
-          getData={getData}
-        />
+        <AddTodo getData={getData} setIsLoading={setIsLoading} />
+        {isLoading ? (
+          'Loading...'
+        ) : (
+          <TodoList
+            todoList={todoList}
+            setTodoList={setTodoList}
+            getData={getData}
+          />
+        )}
       </div>
     </div>
   );

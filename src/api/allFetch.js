@@ -1,7 +1,6 @@
-import { CONSTANTS } from '../constants/constants';
-const { API_URL } = CONSTANTS;
+import { API_URL } from '@/constants/constants';
 
-async function featchGetTodos(statusTodos) {
+export async function featchGetTodos(statusTodos) {
   try {
     const response = await fetch(`${API_URL}?filter=${statusTodos}`);
     const data = await response.json();
@@ -11,7 +10,7 @@ async function featchGetTodos(statusTodos) {
   }
 }
 
-async function fetchAddTodo(objToSend) {
+export async function fetchAddTodo(objToSend) {
   try {
     const response = await fetch(`${API_URL}`, {
       method: 'POST',
@@ -28,7 +27,7 @@ async function fetchAddTodo(objToSend) {
   }
 }
 
-async function fetchDeleteTodo(id) {
+export async function fetchDeleteTodo(id) {
   try {
     await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
@@ -38,7 +37,7 @@ async function fetchDeleteTodo(id) {
   }
 }
 
-async function fetchSaveTodo(id, objToSend) {
+export async function fetchUpdateTodo(id, objToSend) {
   try {
     await fetch(`${API_URL}/${id}`, {
       method: 'PUT',
@@ -51,25 +50,3 @@ async function fetchSaveTodo(id, objToSend) {
     console.log('ошибка изменения записи', error);
   }
 }
-
-async function fetchToggleStatusTodo(id, objToSend) {
-  try {
-    await fetch(`${API_URL}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      body: JSON.stringify(objToSend),
-    });
-  } catch (error) {
-    console.log('ошибка изменения записи', error);
-  }
-}
-
-export const allFetch = {
-  featchGetTodos,
-  fetchAddTodo,
-  fetchDeleteTodo,
-  fetchSaveTodo,
-  fetchToggleStatusTodo,
-};
