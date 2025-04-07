@@ -36,8 +36,8 @@ export function AddTodo({ getData }) {
           title="введите задачу"
           name="todo"
           value={addTodoValue}
-          onChange={(e) => {
-            setAddTodoValue(e.target.value);
+          onChange={(event) => {
+            setAddTodoValue(event.target.value);
           }}
         />
         <button className="add-btn">add</button>

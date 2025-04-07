@@ -1,22 +1,19 @@
 import style from './Todo.module.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { REGEXP_VALIDATE_TODO_TITLE } from '@/constants/constants';
 import { fetchDeleteTodo, fetchUpdateTodo } from '@/api/allFetch';
 
-export function Todo({ todo, setTodoList, getData }) {
-  const { title, id, isDone, isEdit } = todo;
+export function Todo({ todo, getData, idEditTodo, setidEditTodo }) {
+  const { title, id, isDone } = todo;
 
   const [editValue, setEditValue] = useState('');
 
-  // добавляю флаг в объект для редактирования задачи
-
-  const handlerEditTodo = (id, title) => {
-    setTodoList((todolist) =>
-      todolist.map((todo) =>
-        todo.id === id ? { ...todo, isEdit: true } : { ...todo, isEdit: false }
-      )
-    );
-    setEditValue(title);
+  //редактирование задачи
+  const handlerEditTodo = (title, id) => {
+    if (idEditTodo !== id) {
+      setidEditTodo(id);
+      setEditValue(title);
+    }
   };
 
   function handlerOnChangeEditTodo(event) {
@@ -25,7 +22,7 @@ export function Todo({ todo, setTodoList, getData }) {
 
   // сброс редактирования
   function cancelTodoEdit() {
-    getData();
+    setidEditTodo(null);
   }
 
   // отправляю изменения задачи на сервер
@@ -78,7 +75,7 @@ export function Todo({ todo, setTodoList, getData }) {
 
   return (
     <>
-      {isEdit ? (
+      {idEditTodo === id ? (
         <form onSubmit={saveTodo}>
           <div className={style.edit} key={id}>
             <input type="checkbox" disabled checked={isDone} />
@@ -106,7 +103,7 @@ export function Todo({ todo, setTodoList, getData }) {
             {title}
           </div>
 
-          <button type="button" onClick={() => handlerEditTodo(id, title)}>
+          <button type="button" onClick={() => handlerEditTodo(title, id)}>
             edit
           </button>
           <button type="button" onClick={() => deleteTodo(id)}>

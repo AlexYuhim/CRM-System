@@ -44,7 +44,7 @@ export function TodoBoardPages() {
         setStatusTodos={setStatusTodos}
       />
       <div className={style.group_input_ouyput}>
-        <AddTodo getData={getData} setIsLoading={setIsLoading} />
+        <AddTodo getData={getData} />
         {isLoading ? (
           'Loading...'
         ) : (
