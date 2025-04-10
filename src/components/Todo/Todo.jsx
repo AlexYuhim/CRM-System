@@ -3,17 +3,17 @@ import { useState } from 'react';
 import { REGEXP_VALIDATE_TODO_TITLE } from '@/constants/constants';
 import { fetchDeleteTodo, fetchUpdateTodo } from '@/api/allFetch';
 
-export function Todo({ todo, getData, idEditTodo, setidEditTodo }) {
+export function Todo({ todo, getData }) {
   const { title, id, isDone } = todo;
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const [editValue, setEditValue] = useState('');
 
   //редактирование задачи
-  const handlerEditTodo = (title, id) => {
-    if (idEditTodo !== id) {
-      setidEditTodo(id);
-      setEditValue(title);
-    }
+  const handlerEditTodo = (title) => {
+    setEditValue(title);
+    setIsEdit(true);
   };
 
   function handlerOnChangeEditTodo(event) {
@@ -22,7 +22,7 @@ export function Todo({ todo, getData, idEditTodo, setidEditTodo }) {
 
   // сброс редактирования
   function cancelTodoEdit() {
-    setidEditTodo(null);
+    setIsEdit(false);
   }
 
   // отправляю изменения задачи на сервер
@@ -75,7 +75,7 @@ export function Todo({ todo, getData, idEditTodo, setidEditTodo }) {
 
   return (
     <>
-      {idEditTodo === id ? (
+      {isEdit ? (
         <form onSubmit={saveTodo}>
           <div className={style.edit} key={id}>
             <input type="checkbox" disabled checked={isDone} />
