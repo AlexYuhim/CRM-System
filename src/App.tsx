@@ -1,5 +1,5 @@
-import './App.css';
-import { TodoBoardPages } from './pages/TodoBoardPages/TodoBoardPages';
+import "@/App.css";
+import { TodoBoardPages } from "@/pages/TodoBoardPages/TodoBoardPages";
 
 function App() {
   return (

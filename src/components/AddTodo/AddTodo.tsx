@@ -1,16 +1,17 @@
-import { useState } from 'react';
-import style from './AddTodo.module.css';
-import { REGEXP_VALIDATE_TODO_TITLE } from '@/constants/constants';
-import { fetchAddTodo } from '@/api/allFetch';
+import React, { useState, FC } from "react";
+import style from "./AddTodo.module.css";
+import { REGEXP_VALIDATE_TODO_TITLE } from "@/constants/constants";
+import { fetchAddTodo } from "@/api/allFetch";
+import { ITodoList } from "@/types/types";
 
-export function AddTodo({ getData }) {
-  const [addTodoValue, setAddTodoValue] = useState('');
+export const AddTodo: FC<ITodoList> = ({ getData }) => {
+  const [addTodoValue, setAddTodoValue] = useState("");
 
   //добавляю задачу
-  async function addTodo(event) {
+  async function addTodo(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!REGEXP_VALIDATE_TODO_TITLE.test(addTodoValue.trim())) {
-      alert('Строка должна содержать от 2 до 64  символов ');
+      alert("Строка должна содержать от 2 до 64  символов ");
       return;
     }
 
@@ -20,10 +21,10 @@ export function AddTodo({ getData }) {
 
     try {
       await fetchAddTodo(objToSend);
-      setAddTodoValue('');
-      getData();
+      setAddTodoValue("");
+      if (getData) getData();
     } catch (error) {
-      console.log('ошибка добавления задачи', error);
+      console.log("ошибка добавления задачи", error);
     }
   }
 
@@ -44,4 +45,4 @@ export function AddTodo({ getData }) {
       </form>
     </div>
   );
-}
+};
