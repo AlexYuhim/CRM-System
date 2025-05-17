@@ -1,7 +1,7 @@
-export type ObjToSend = {
+export interface TodoRequest {
   title?: string;
   isDone?: boolean;
-};
+}
 
 export interface ITodo {
   id: number;
@@ -34,10 +34,5 @@ export type StatusWork = "all" | "completed" | "inWork";
 
 export interface ITodoList {
   todoList?: ITodo[];
-  getData: () => Promise<void>;
-}
-
-export interface ITodoProps {
-  todo: ITodo;
   getData: () => Promise<void>;
 }

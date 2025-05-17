@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import style from "./TodoBoardPages.module.css";
-import { featchGetTodos } from "@/api/allFetch";
+import { metaResponse } from "@/api/allFetch";
 import { AddTodo } from "@/components/AddTodo/AddTodo";
 import { ListOfTasks } from "@/components/ListOfTasks/ListOfTasks";
 import { TodoList } from "@/components/TodoList/TodoList";
@@ -26,7 +26,7 @@ export function TodoBoardPages() {
   const getData = async () => {
     try {
       setIsLoading(true);
-      const data = await featchGetTodos(statusTodos);
+      const data = await metaResponse(statusTodos);
       console.log("getData", data);
 
       if (data.info) {

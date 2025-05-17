@@ -1,8 +1,14 @@
 import { API_URL } from "@/constants/constants";
-import { MetaResponse, ObjToSend, ITodo, TodoInfo } from "@/types/types";
+import {
+  MetaResponse,
+  TodoRequest,
+  ITodo,
+  TodoInfo,
+  StatusWork,
+} from "@/types/types";
 
-export async function featchGetTodos(
-  statusTodos: string
+export async function metaResponse(
+  statusTodos: StatusWork
 ): Promise<MetaResponse<ITodo, TodoInfo>> {
   try {
     const response = await fetch(`${API_URL}?filter=${statusTodos}`);
@@ -15,14 +21,14 @@ export async function featchGetTodos(
   }
 }
 
-export async function fetchAddTodo(objToSend: ObjToSend) {
+export async function addTodo(todoRequest: TodoRequest) {
   try {
     const response = await fetch(`${API_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
       },
-      body: JSON.stringify(objToSend),
+      body: JSON.stringify(todoRequest),
     });
 
     const data = await response.json();
@@ -32,7 +38,7 @@ export async function fetchAddTodo(objToSend: ObjToSend) {
   }
 }
 
-export async function fetchDeleteTodo(id: number) {
+export async function deleteTodo(id: number) {
   try {
     await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
@@ -42,14 +48,14 @@ export async function fetchDeleteTodo(id: number) {
   }
 }
 
-export async function fetchUpdateTodo(id: number, objToSend: ObjToSend) {
+export async function updateTodo(id: number, todoRequest: TodoRequest) {
   try {
     await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
       },
-      body: JSON.stringify(objToSend),
+      body: JSON.stringify(todoRequest),
     });
   } catch (error) {
     console.log("ошибка изменения записи", error);

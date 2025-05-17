@@ -1,8 +1,13 @@
 import style from "./Todo.module.css";
 import React, { FC, useState } from "react";
 import { REGEXP_VALIDATE_TODO_TITLE } from "@/constants/constants";
-import { fetchDeleteTodo, fetchUpdateTodo } from "@/api/allFetch";
-import { ITodoProps } from "@/types/types";
+import { deleteTodo, updateTodo } from "@/api/allFetch";
+import { ITodo } from "@/types/types";
+
+export interface ITodoProps {
+  todo: ITodo;
+  getData: () => Promise<void>;
+}
 
 export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
   const { title, id, isDone } = todo;
@@ -40,8 +45,10 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
       title: editValue,
     };
     try {
-      await fetchUpdateTodo(id, objToSend);
-      if (getData) getData();
+      await updateTodo(id, objToSend);
+      if (getData) {
+        getData();
+      }
     } catch (error) {
       console.log("ошибка изменения записи", error);
     }
@@ -49,11 +56,13 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
 
   //удаляю задачу
 
-  async function deleteTodo(id: number) {
+  async function handlerDeleteTodo(id: number) {
     try {
-      await fetchDeleteTodo(id);
+      await deleteTodo(id);
 
-      if (getData) getData();
+      if (getData) {
+        getData();
+      }
     } catch (error) {
       console.log("ошибка удаления задачи", error);
     }
@@ -67,8 +76,10 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
     };
 
     try {
-      await fetchUpdateTodo(id, objToSend);
-      if (getData) getData();
+      await updateTodo(id, objToSend);
+      if (getData) {
+        getData();
+      }
     } catch (error) {
       console.log("ошибка изменения записи", error);
     }
@@ -107,7 +118,7 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
           <button type="button" onClick={() => handlerEditTodo(title)}>
             edit
           </button>
-          <button type="button" onClick={() => deleteTodo(id)}>
+          <button type="button" onClick={() => handlerDeleteTodo(id)}>
             del
           </button>
         </div>
