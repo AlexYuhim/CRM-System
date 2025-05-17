@@ -1,23 +1,29 @@
-import style from './Todo.module.css';
-import { useState } from 'react';
-import { REGEXP_VALIDATE_TODO_TITLE } from '@/constants/constants';
-import { fetchDeleteTodo, fetchUpdateTodo } from '@/api/allFetch';
+import style from "./Todo.module.css";
+import React, { FC, useState } from "react";
+import { REGEXP_VALIDATE_TODO_TITLE } from "@/constants/constants";
+import { deleteTodo, updateTodo } from "@/api/allFetch";
+import { ITodo } from "@/types/types";
 
-export function Todo({ todo, getData }) {
+export interface ITodoProps {
+  todo: ITodo;
+  getData: () => Promise<void>;
+}
+
+export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
   const { title, id, isDone } = todo;
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const [editValue, setEditValue] = useState('');
+  const [editValue, setEditValue] = useState("");
 
   //редактирование задачи
-  const handlerEditTodo = (title) => {
+  const handlerEditTodo = (title: string) => {
     setEditValue(title);
     setIsEdit(true);
   };
 
-  function handlerOnChangeEditTodo(event) {
-    setEditValue(event);
+  function handlerOnChangeEditTodo(event: React.ChangeEvent<HTMLInputElement>) {
+    setEditValue(event.target.value);
   }
 
   // сброс редактирования
@@ -27,11 +33,11 @@ export function Todo({ todo, getData }) {
 
   // отправляю изменения задачи на сервер
 
-  async function saveTodo(event) {
+  async function saveTodo(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!REGEXP_VALIDATE_TODO_TITLE.test(editValue.trim())) {
-      alert('Строка должна содержать от 2 до 64  символов ');
+      alert("Строка должна содержать от 2 до 64  символов ");
       return;
     }
 
@@ -39,37 +45,43 @@ export function Todo({ todo, getData }) {
       title: editValue,
     };
     try {
-      await fetchUpdateTodo(id, objToSend);
-      getData();
+      await updateTodo(id, objToSend);
+      if (getData) {
+        getData();
+      }
     } catch (error) {
-      console.log('ошибка изменения записи', error);
+      console.log("ошибка изменения записи", error);
     }
   }
 
   //удаляю задачу
 
-  async function deleteTodo(id) {
+  async function handlerDeleteTodo(id: number) {
     try {
-      await fetchDeleteTodo(id);
+      await deleteTodo(id);
 
-      getData();
+      if (getData) {
+        getData();
+      }
     } catch (error) {
-      console.log('ошибка удаления задачи', error);
+      console.log("ошибка удаления задачи", error);
     }
   }
 
   // переключение задачи между статуами (выполнено / в работе)
 
-  async function toggleStatusTodo(id, isDone) {
+  async function toggleStatusTodo(id: number, isDone: boolean) {
     const objToSend = {
       isDone: !isDone,
     };
 
     try {
-      await fetchUpdateTodo(id, objToSend);
-      getData();
+      await updateTodo(id, objToSend);
+      if (getData) {
+        getData();
+      }
     } catch (error) {
-      console.log('ошибка изменения записи', error);
+      console.log("ошибка изменения записи", error);
     }
   }
 
@@ -83,7 +95,7 @@ export function Todo({ todo, getData }) {
               autoFocus
               value={editValue}
               type="text"
-              onChange={(e) => handlerOnChangeEditTodo(e.target.value)}
+              onChange={handlerOnChangeEditTodo}
             />
             <button type="submit">save</button>
             <button type="button" onClick={() => cancelTodoEdit()}>
@@ -103,14 +115,14 @@ export function Todo({ todo, getData }) {
             {title}
           </div>
 
-          <button type="button" onClick={() => handlerEditTodo(title, id)}>
+          <button type="button" onClick={() => handlerEditTodo(title)}>
             edit
           </button>
-          <button type="button" onClick={() => deleteTodo(id)}>
+          <button type="button" onClick={() => handlerDeleteTodo(id)}>
             del
           </button>
         </div>
       )}
     </>
   );
-}
+};
