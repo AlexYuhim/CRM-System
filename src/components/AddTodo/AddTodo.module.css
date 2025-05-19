@@ -1,16 +1,14 @@
-.input_field_wr form{
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        gap: 72px;
+.input_field_wr form {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: 1fr 150px;
+  gap: 74px;
 }
 
-.input_field_wr input{
-        width: 100%;
-        
+.input_field_wr input {
+  width: 100%;
 }
 
-.input_field_wr button{
-        width: 150px
-        
+.input_field_wr button {
+  width: 150px;
 }

@@ -27,7 +27,6 @@ export function TodoBoardPages() {
     try {
       setIsLoading(true);
       const data = await metaResponse(statusTodos);
-      console.log("getData", data);
 
       if (data.info) {
         setCountTodos(data.info);
