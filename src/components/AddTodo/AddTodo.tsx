@@ -1,16 +1,25 @@
 import { FC } from "react";
-import style from "./AddTodo.module.css";
 import { addTodo } from "@/api/allFetch";
 import { ITodoList } from "@/types/types";
-import { Button, Form, Input } from "antd";
+import { REGEXP_VALIDATE_TODO_TITLE } from "@/constants/constants";
+import { Button, Form, Input, Row, Col } from "antd";
+
+interface FormValueProp {
+  todo_input: string;
+}
 
 export const AddTodo: FC<ITodoList> = ({ getData }) => {
   const [form] = Form.useForm();
-
   //добавляю задачу
-  async function handlerAddTodo(value: { todo_input: string }) {
+  async function handlerAddTodo(value: FormValueProp) {
+    if (!REGEXP_VALIDATE_TODO_TITLE.test(value.todo_input.trim())) {
+      alert(
+        "Строка должна содержать от 2 до 64  символов, не начинасть с пробела  "
+      );
+      return;
+    }
     const todoRequest = {
-      title: value.todo_input,
+      title: value.todo_input.trim(),
     };
 
     try {
@@ -25,25 +34,29 @@ export const AddTodo: FC<ITodoList> = ({ getData }) => {
   }
 
   return (
-    <div className={style.input_field_wr}>
-      <Form onFinish={handlerAddTodo} form={form}>
-        <Form.Item
-          name="todo_input"
-          rules={[
-            { required: true, message: "Введите задачу" },
-            { min: 2, message: "Минимум 2 символа" },
-            { max: 64, message: "Максимум 64 символов" },
-          ]}
-        >
-          <Input title="введите задачу" showCount placeholder="add todo" />
-        </Form.Item>
+    <Form onFinish={handlerAddTodo} form={form}>
+      <Row gutter={24}>
+        <Col flex="70%">
+          <Form.Item
+            name="todo_input"
+            rules={[
+              { required: true, message: "Введите название задачи" },
+              { min: 2, message: "Минимум 2 символа" },
+              { max: 64, message: "Максимум 64 символов" },
+            ]}
+          >
+            <Input title="введите задачу" showCount placeholder="add todo" />
+          </Form.Item>
+        </Col>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            add
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+        <Col flex="30%">
+          <Form.Item>
+            <Button block type="primary" htmlType="submit">
+              add
+            </Button>
+          </Form.Item>
+        </Col>
+      </Row>
+    </Form>
   );
 };

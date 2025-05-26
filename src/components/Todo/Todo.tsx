@@ -3,6 +3,7 @@ import React, { FC, useState } from "react";
 import { REGEXP_VALIDATE_TODO_TITLE } from "@/constants/constants";
 import { deleteTodo, updateTodo } from "@/api/allFetch";
 import { ITodo } from "@/types/types";
+import { Button, Col, Form, Input, Row } from "antd";
 
 export interface ITodoProps {
   todo: ITodo;
@@ -33,9 +34,7 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
 
   // отправляю изменения задачи на сервер
 
-  async function saveTodo(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  async function saveTodo() {
     if (!REGEXP_VALIDATE_TODO_TITLE.test(editValue.trim())) {
       alert("Строка должна содержать от 2 до 64  символов ");
       return;
@@ -88,40 +87,70 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
   return (
     <>
       {isEdit ? (
-        <form onSubmit={saveTodo}>
-          <div className={style.edit} key={id}>
-            <input type="checkbox" disabled checked={isDone} />
-            <input
-              autoFocus
-              value={editValue}
-              type="text"
-              onChange={handlerOnChangeEditTodo}
-            />
-            <button type="submit">save</button>
-            <button type="button" onClick={() => cancelTodoEdit()}>
-              cancel
-            </button>
-          </div>
-        </form>
-      ) : (
-        <div className={style.todo_wr} key={id}>
-          <input
-            readOnly
-            checked={isDone}
-            type="checkbox"
-            onClick={() => toggleStatusTodo(id, isDone)}
-          />
-          <div className={isDone ? style.completed_todo : undefined}>
-            {title}
-          </div>
+        <Form onFinish={saveTodo}>
+          <Row gutter={20} justify="space-between">
+            <Col flex="50px">
+              <Form.Item>
+                <Input type="checkbox" disabled checked={isDone} />
+              </Form.Item>
+            </Col>
+            <Col flex="auto">
+              <Form.Item>
+                <Input
+                  autoFocus
+                  value={editValue}
+                  type="text"
+                  onChange={handlerOnChangeEditTodo}
+                />
+              </Form.Item>
+            </Col>
 
-          <button type="button" onClick={() => handlerEditTodo(title)}>
-            edit
-          </button>
-          <button type="button" onClick={() => handlerDeleteTodo(id)}>
-            del
-          </button>
-        </div>
+            <Col flex="100px">
+              <Button htmlType="submit" color="cyan" variant="solid">
+                save
+              </Button>
+            </Col>
+            <Col flex="100px">
+              <Button
+                onClick={() => cancelTodoEdit()}
+                color="default"
+                variant="filled"
+              >
+                cancel
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      ) : (
+        <Row gutter={20} justify="space-between" key={id}>
+          <Col flex="50px">
+            <Input
+              readOnly
+              checked={isDone}
+              type="checkbox"
+              onClick={() => toggleStatusTodo(id, isDone)}
+            />
+          </Col>
+          <Col flex="auto">
+            <div className={isDone ? style.completed_todo : undefined}>
+              {title}
+            </div>
+          </Col>
+          <Col flex="100px">
+            <Button type="primary" onClick={() => handlerEditTodo(title)}>
+              edit
+            </Button>
+          </Col>
+          <Col flex="100px">
+            <Button
+              color="danger"
+              variant="solid"
+              onClick={() => handlerDeleteTodo(id)}
+            >
+              del
+            </Button>
+          </Col>
+        </Row>
       )}
     </>
   );
