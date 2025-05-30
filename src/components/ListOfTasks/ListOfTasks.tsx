@@ -1,7 +1,6 @@
 import { ListOfTasksPros } from "@/types/types";
 import { FC } from "react";
 import { Radio, Flex } from "antd";
-import style from "./ListTasks.module.css";
 export const ListOfTasks: FC<ListOfTasksPros> = ({
   countTodos,
   setStatusTodos,
