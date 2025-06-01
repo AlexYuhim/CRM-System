@@ -1,9 +1,11 @@
 import style from "./Todo.module.css";
 import React, { FC, useState } from "react";
-import { REGEXP_VALIDATE_TODO_TITLE } from "@/constants/constants";
-import { deleteTodo, updateTodo } from "@/api/allFetch";
+import { deleteTodo, updateTodo } from "@/api/api.crud";
 import { ITodo } from "@/types/types";
 import { Button, Col, Form, Input, Row } from "antd";
+import { VALIDATE_CHAR } from "@/constants/constants";
+
+const { MIN, MAX } = VALIDATE_CHAR;
 
 export interface ITodoProps {
   todo: ITodo;
@@ -35,16 +37,11 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
   // отправляю изменения задачи на сервер
 
   async function saveTodo() {
-    if (!REGEXP_VALIDATE_TODO_TITLE.test(editValue.trim())) {
-      alert("Строка должна содержать от 2 до 64  символов ");
-      return;
-    }
-
-    const objToSend = {
+    const todoRequest = {
       title: editValue,
     };
     try {
-      await updateTodo(id, objToSend);
+      await updateTodo(id, todoRequest);
       if (getData) {
         getData();
       }
@@ -70,12 +67,12 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
   // переключение задачи между статуами (выполнено / в работе)
 
   async function toggleStatusTodo(id: number, isDone: boolean) {
-    const objToSend = {
+    const todoRequest = {
       isDone: !isDone,
     };
 
     try {
-      await updateTodo(id, objToSend);
+      await updateTodo(id, todoRequest);
       if (getData) {
         getData();
       }
@@ -95,10 +92,16 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
               </Form.Item>
             </Col>
             <Col flex="auto">
-              <Form.Item>
+              <Form.Item
+                name={"edit_input"}
+                initialValue={editValue}
+                rules={[
+                  { min: MIN, message: "Минимум 2 символа" },
+                  { max: MAX, message: "Максимум 64 символов" },
+                ]}
+              >
                 <Input
                   autoFocus
-                  value={editValue}
                   type="text"
                   onChange={handlerOnChangeEditTodo}
                 />

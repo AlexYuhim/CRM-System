@@ -1,4 +1,4 @@
-import { ListOfTasksPros } from "@/types/types";
+import { ListOfTasksPros, StatusWork } from "@/types/types";
 import { FC } from "react";
 import { Radio, Flex } from "antd";
 export const ListOfTasks: FC<ListOfTasksPros> = ({
@@ -13,7 +13,7 @@ export const ListOfTasks: FC<ListOfTasksPros> = ({
         value={statusTodos}
         optionType="button"
         buttonStyle="solid"
-        onChange={(e) => setStatusTodos(e.target.value)}
+        onChange={(e) => setStatusTodos(e.target.value as StatusWork)}
         style={{ display: "flex", gap: "20px" }}
       >
         <Radio.Button value={"all"}>All : {countTodos.all}</Radio.Button>

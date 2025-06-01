@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import style from "./TodoBoardPages.module.css";
-import { metaResponse } from "@/api/allFetch";
+import { metaResponse } from "@/api/api.crud";
 import { AddTodo } from "@/components/AddTodo/AddTodo";
 import { ListOfTasks } from "@/components/ListOfTasks/ListOfTasks";
 import { TodoList } from "@/components/TodoList/TodoList";

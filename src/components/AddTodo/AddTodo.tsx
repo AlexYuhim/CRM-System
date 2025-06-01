@@ -1,8 +1,10 @@
 import { FC } from "react";
-import { addTodo } from "@/api/allFetch";
+import { addTodo } from "@/api/api.crud";
 import { ITodoList } from "@/types/types";
-import { REGEXP_VALIDATE_TODO_TITLE } from "@/constants/constants";
+import { VALIDATE_CHAR } from "@/constants/constants";
 import { Button, Form, Input, Row, Col } from "antd";
+
+const { MIN, MAX } = VALIDATE_CHAR;
 
 interface FormValueProp {
   todo_input: string;
@@ -10,14 +12,9 @@ interface FormValueProp {
 
 export const AddTodo: FC<ITodoList> = ({ getData }) => {
   const [form] = Form.useForm();
+
   //добавляю задачу
   async function handlerAddTodo(value: FormValueProp) {
-    if (!REGEXP_VALIDATE_TODO_TITLE.test(value.todo_input.trim())) {
-      alert(
-        "Строка должна содержать от 2 до 64  символов, не начинасть с пробела  "
-      );
-      return;
-    }
     const todoRequest = {
       title: value.todo_input.trim(),
     };
@@ -41,8 +38,8 @@ export const AddTodo: FC<ITodoList> = ({ getData }) => {
             name="todo_input"
             rules={[
               { required: true, message: "Введите название задачи" },
-              { min: 2, message: "Минимум 2 символа" },
-              { max: 64, message: "Максимум 64 символов" },
+              { min: MIN, message: "Минимум 2 символа" },
+              { max: MAX, message: "Максимум 64 символов" },
             ]}
           >
             <Input title="введите задачу" showCount placeholder="add todo" />
