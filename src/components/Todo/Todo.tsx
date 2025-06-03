@@ -8,19 +8,21 @@ import { VALIDATE_CHAR } from "@/constants/constants";
 const { MIN, MAX } = VALIDATE_CHAR;
 
 export interface ITodoProps {
+  intervalUpdate?: number | undefined;
   todo: ITodo;
   getData: () => Promise<void>;
 }
 
-export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
+export const Todo: FC<ITodoProps> = ({ todo, getData, intervalUpdate }) => {
   const { title, id, isDone } = todo;
 
   const [isEdit, setIsEdit] = useState(false);
 
   const [editValue, setEditValue] = useState("");
 
-  //редактирование задачи
+  //редактирование задачи, остановка обнавления
   const handlerEditTodo = (title: string) => {
+    clearInterval(intervalUpdate);
     setEditValue(title);
     setIsEdit(true);
   };
@@ -29,9 +31,10 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
     setEditValue(event.target.value);
   }
 
-  // сброс редактирования
+  // сброс редактирования, перерендер компонента
   function cancelTodoEdit() {
     setIsEdit(false);
+    getData();
   }
 
   // отправляю изменения задачи на сервер
@@ -96,8 +99,8 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
                 name={"edit_input"}
                 initialValue={editValue}
                 rules={[
-                  { min: MIN, message: "Минимум 2 символа" },
-                  { max: MAX, message: "Максимум 64 символов" },
+                  { min: MIN, message: `Минимум ${MIN} символа` },
+                  { max: MAX, message: `Максимум ${MAX} символов` },
                 ]}
               >
                 <Input
@@ -114,11 +117,7 @@ export const Todo: FC<ITodoProps> = ({ todo, getData }) => {
               </Button>
             </Col>
             <Col flex="100px">
-              <Button
-                onClick={() => cancelTodoEdit()}
-                color="default"
-                variant="filled"
-              >
+              <Button onClick={cancelTodoEdit} color="default" variant="filled">
                 cancel
               </Button>
             </Col>

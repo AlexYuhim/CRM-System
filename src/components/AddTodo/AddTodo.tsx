@@ -7,7 +7,7 @@ import { Button, Form, Input, Row, Col } from "antd";
 const { MIN, MAX } = VALIDATE_CHAR;
 
 interface FormValueProp {
-  todo_input: string;
+  inputAddTask: string;
 }
 
 export const AddTodo: FC<ITodoList> = ({ getData }) => {
@@ -16,7 +16,7 @@ export const AddTodo: FC<ITodoList> = ({ getData }) => {
   //добавляю задачу
   async function handlerAddTodo(value: FormValueProp) {
     const todoRequest = {
-      title: value.todo_input.trim(),
+      title: value.inputAddTask.trim(),
     };
 
     try {
@@ -35,11 +35,11 @@ export const AddTodo: FC<ITodoList> = ({ getData }) => {
       <Row gutter={24}>
         <Col flex="70%">
           <Form.Item
-            name="todo_input"
+            name="inputAddTask"
             rules={[
               { required: true, message: "Введите название задачи" },
-              { min: MIN, message: "Минимум 2 символа" },
-              { max: MAX, message: "Максимум 64 символов" },
+              { min: MIN, message: `Минимум ${MIN} символа` },
+              { max: MAX, message: `Максимум ${MAX} символов` },
             ]}
           >
             <Input title="введите задачу" showCount placeholder="add todo" />
