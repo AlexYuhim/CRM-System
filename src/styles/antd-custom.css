@@ -1,0 +1,14 @@
+.ant-form-item,
+.ant-list-item {
+  margin: 0;
+  padding: o;
+}
+
+.ant-list-item .ant-row,
+.ant-list-item .ant-form {
+  width: 100%;
+}
+
+.ant-list-bordered.ant-list-lg .ant-list-item {
+  padding: 10px;
+}

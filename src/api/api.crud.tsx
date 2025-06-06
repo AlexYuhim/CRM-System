@@ -6,14 +6,21 @@ import {
   TodoInfo,
   StatusWork,
 } from "@/types/types";
+import axios from "axios";
+
+const instansCRUD = axios.create({
+  baseURL: API_URL,
+  headers: { "Content-Type": "application/json" },
+});
 
 export async function metaResponse(
   statusTodos: StatusWork
 ): Promise<MetaResponse<ITodo, TodoInfo>> {
   try {
-    const response = await fetch(`${API_URL}?filter=${statusTodos}`);
-
-    const data: MetaResponse<ITodo, TodoInfo> = await response.json();
+    const response = await instansCRUD.get("/todos", {
+      params: { filter: statusTodos },
+    });
+    const data: MetaResponse<ITodo, TodoInfo> = response.data;
     return data;
   } catch (error) {
     console.log("Ошибка запроса данных", error);
@@ -23,15 +30,9 @@ export async function metaResponse(
 
 export async function addTodo(todoRequest: TodoRequest) {
   try {
-    const response = await fetch(`${API_URL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(todoRequest),
-    });
+    const response = await instansCRUD.post("/todos", todoRequest);
 
-    const data = await response.json();
+    const data = response.data;
     return data;
   } catch (error) {
     console.log("ошибка добавления задачи", error);
@@ -40,9 +41,7 @@ export async function addTodo(todoRequest: TodoRequest) {
 
 export async function deleteTodo(id: number) {
   try {
-    await fetch(`${API_URL}/${id}`, {
-      method: "DELETE",
-    });
+    await instansCRUD.delete(`/todos/${id}`);
   } catch (error) {
     console.log("ошибка удаления задачи", error);
   }
@@ -50,13 +49,7 @@ export async function deleteTodo(id: number) {
 
 export async function updateTodo(id: number, todoRequest: TodoRequest) {
   try {
-    await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(todoRequest),
-    });
+    await instansCRUD.put(`/todos/${id}`, todoRequest);
   } catch (error) {
     console.log("ошибка изменения записи", error);
   }

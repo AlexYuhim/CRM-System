@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import style from "./TodoBoardPages.module.css";
-import { metaResponse } from "@/api/allFetch";
+import { metaResponse } from "@/api/api.crud";
 import { AddTodo } from "@/components/AddTodo/AddTodo";
 import { ListOfTasks } from "@/components/ListOfTasks/ListOfTasks";
 import { TodoList } from "@/components/TodoList/TodoList";
@@ -15,6 +14,7 @@ export function TodoBoardPages() {
     completed: 0,
     inWork: 0,
   });
+
   const [isLoading, setIsLoading] = useState(false);
 
   // отслеживаем изминение статуса списка задач
@@ -27,7 +27,6 @@ export function TodoBoardPages() {
     try {
       setIsLoading(true);
       const data = await metaResponse(statusTodos);
-      console.log("getData", data);
 
       if (data.info) {
         setCountTodos(data.info);

@@ -1,34 +1,29 @@
-import { ListOfTasksPros } from "@/types/types";
-import style from "./ListOfTasks.module.css";
+import { ListOfTasksPros, StatusWork } from "@/types/types";
 import { FC } from "react";
-
+import { Radio, Flex } from "antd";
 export const ListOfTasks: FC<ListOfTasksPros> = ({
   countTodos,
   setStatusTodos,
   statusTodos,
 }) => {
   return (
-    <div className={style.wr_count_todo}>
-      <button
-        className={statusTodos === "all" ? `${style.btn_active}` : undefined}
-        onClick={() => setStatusTodos("all")}
+    <Flex vertical>
+      <Radio.Group
+        block
+        value={statusTodos}
+        optionType="button"
+        buttonStyle="solid"
+        onChange={(e) => setStatusTodos(e.target.value as StatusWork)}
+        style={{ display: "flex", gap: "20px" }}
       >
-        All: ({countTodos.all})
-      </button>
-      <button
-        className={
-          statusTodos === "completed" ? `${style.btn_active}` : undefined
-        }
-        onClick={() => setStatusTodos("completed")}
-      >
-        completed: ({countTodos.completed})
-      </button>
-      <button
-        className={statusTodos === "inWork" ? `${style.btn_active}` : undefined}
-        onClick={() => setStatusTodos("inWork")}
-      >
-        inWork: ({countTodos.inWork})
-      </button>
-    </div>
+        <Radio.Button value={"all"}>All : {countTodos.all}</Radio.Button>
+        <Radio.Button value={"completed"}>
+          completed : {countTodos.completed}
+        </Radio.Button>
+        <Radio.Button value={"inWork"}>
+          inWork : {countTodos.inWork}
+        </Radio.Button>
+      </Radio.Group>
+    </Flex>
   );
 };
