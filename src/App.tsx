@@ -5,10 +5,12 @@ import { Profile } from "./pages/Profile/Profile";
 import { NavigationMenu } from "./components/NavigationMenu/NavigationMenu";
 import { NoFound } from "./pages/NoFound/NoFound";
 import { Col, Row } from "antd";
+import { AuthLayout } from "./components/Auth/AuthLayout";
 
 function App() {
   return (
     <>
+      <AuthLayout />
       <h1 className="tile_main">CRM-System</h1>
       <div className="main_wr">
         <Row>

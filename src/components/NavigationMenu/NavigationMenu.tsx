@@ -6,7 +6,7 @@ type MenuItem = Required<MenuProps>["items"][number];
 
 const items: MenuItem[] = [
   { key: "1", label: <Link to="/">список задач</Link> },
-  { key: "2", label: <Link to="/profile">профиль</Link> },
+  { key: "2", label: <Link to="/profile">личный кабинет</Link> },
 ];
 
 export function NavigationMenu() {
