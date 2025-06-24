@@ -1,16 +1,23 @@
-import { signIn } from "@/api/api.crud";
 import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
+import { signIn } from "@/ducks/auth";
+import { useAppDispatch } from "@/ducks/hooks";
 import { AuthData, AuthFormsProps } from "@/types/types";
 import { Button, Form, Input } from "antd";
+
 const { MIN_CHAR_LOGIN, MAX_CHAR_LOGIN, MIN_CHAR_PASSWORD, MAX_CHAR_PASSWORD } =
   VALIDATE_CHAR_FORM_REGISTRATION;
 
 export const SignInForm: React.FC<AuthFormsProps> = ({ onToggleForm }) => {
   const [form] = Form.useForm<AuthData>();
+  const dispatch = useAppDispatch();
 
-  async function submmitSignInForm(authData: AuthData) {
-    await signIn(authData);
-  }
+  const submmitSignInForm = (authData: AuthData) => {
+    console.log("hi SignInForm");
+
+    dispatch(signIn(authData));
+
+    // form.resetFields();
+  };
   return (
     <Form
       form={form}

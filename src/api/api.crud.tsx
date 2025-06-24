@@ -14,7 +14,7 @@ import { Navigate } from "react-router-dom";
 
 const instansCRUD = axios.create({
   baseURL: API_URL,
-  headers: { accept: "application/json", "Content-Type": "application/json" },
+  headers: { "Content-Type": "application/json" },
 });
 
 export async function signIn(dataRequest: AuthData) {
