@@ -1,27 +1,88 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { signIn, signUp } from "./thunk";
-import { Profile } from "@/types/types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { logOut, refreshToken, signIn, signUp } from "./thunk";
+import { tokenManager } from "../TokenManager";
 
 interface InitialState {
   accessToken?: string;
   refreshToken?: string;
-  user?: Profile;
+  authenticated?: boolean;
+  isRegistrationForm?: boolean;
+  isLoading?: boolean;
+  error?: string | null;
+  isShowPopUp?: boolean;
 }
 
 const initialState: InitialState = {
-  accessToken: localStorage.getItem("access") || undefined,
+  accessToken: tokenManager.getAccessToken() || undefined,
   refreshToken: localStorage.getItem("refresh") || undefined,
+  authenticated: false,
+  isLoading: false,
+  isRegistrationForm: false,
+  error: null,
+  isShowPopUp: false,
 };
-// создаем slice который будет хранить данные
+// создаем slice который будет хранить состояние об авторизации
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {}, // все action которые будут использоваться с этим слайсом будут асинхроными и созданны с помощью санков thank
+  reducers: {
+    // обработка синхронщины
+    clearError: (state) => {
+      state.error = null;
+    },
+    toggleForm: (state, action: PayloadAction<boolean>) => {
+      state.isRegistrationForm = action.payload;
+    },
+    showPopUp: (state, action: PayloadAction<boolean>) => {
+      state.isShowPopUp = action.payload;
+    },
+  },
   extraReducers(builder) {
-    builder.addMatcher(signUp.fulfilled.match, (state, action) => {});
-    builder.addMatcher(signIn.fulfilled.match, (_, action) => {
-      console.log("action", action);
-      console.log("action.meta.requestStatus", action.meta.requestStatus);
-    });
+    // обработка асинхронщины
+    builder
+      .addCase(signUp.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(signUp.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(signUp.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(signIn.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(signIn.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(refreshToken.rejected, (state) => {
+        state.authenticated = false;
+        tokenManager.clear();
+        localStorage.setItem("refresh", "undefined");
+        state.isLoading = false;
+      })
+      .addMatcher(
+        (action) =>
+          signIn.fulfilled.match(action) ||
+          refreshToken.fulfilled.match(action),
+        (state, action) => {
+          tokenManager.setAccessToken(action.payload.accessToken);
+          localStorage.setItem("refresh", action.payload.refreshToken);
+          state.authenticated = true;
+          state.isLoading = false;
+        }
+      )
+      .addMatcher(
+        (action) =>
+          logOut.fulfilled.match(action) || logOut.rejected.match(action),
+        (state) => {
+          state.authenticated = false;
+          tokenManager.clear();
+          localStorage.setItem("refresh", "undefined");
+        }
+      );
   },
 });
+export const { clearError, toggleForm, showPopUp } = authSlice.actions;

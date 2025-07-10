@@ -1,40 +1,75 @@
-import { API_URL } from "@/constants/constants";
-import { AuthData, Profile, Token, UserRegistration } from "@/types/types";
+import { AuthData, Token, UserRegistration } from "@/types/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { tokenManager } from "../TokenManager";
+import { api } from "@/api/api.crud";
 import axios from "axios";
-
-const apiClient = axios.create({
-  baseURL: API_URL,
-  headers: { accept: "application/json", "Content-Type": "application/json" },
-});
+import { clearError, showPopUp, toggleForm } from "./slice";
 
 export const signUp = createAsyncThunk(
   "auth/signUp",
-  async (dataRequest: UserRegistration) => {
+  async (dataRequest: UserRegistration, { dispatch, rejectWithValue }) => {
     try {
-      const response = await apiClient.post("/auth/signup", dataRequest);
-      const data: Profile = response.data;
+      const response = await api.post("/auth/signup", dataRequest);
+      dispatch(toggleForm(false));
+      dispatch(clearError());
+      dispatch(showPopUp(true));
+      const data: UserRegistration = response.data;
 
       return data;
     } catch (error) {
-      console.log("Ошибка Регистрации", error);
-      throw error;
+      console.log("error", error);
+
+      if (axios.isAxiosError(error)) {
+        dispatch(toggleForm(true));
+        return rejectWithValue(error.response?.data);
+      }
+      return rejectWithValue("Неизвестная ошибка");
     }
   }
 );
 
 export const signIn = createAsyncThunk(
   "auth/signin",
-  async (dataRequest: AuthData) => {
-    console.log("dataRequest", dataRequest);
-
+  async (dataRequest: AuthData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await apiClient.post("/auth/signin", dataRequest);
+      const response = await api.post("/auth/signin", dataRequest);
+      dispatch(toggleForm(false));
       const data: Token = response.data;
+
       return data;
     } catch (error) {
-      console.log("Ошибка Аутентификации", error);
-      throw error;
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data);
+      }
+      return rejectWithValue("Неизвестная ошибка");
     }
   }
 );
+
+export const refreshToken = createAsyncThunk(
+  "/auth/refresh",
+  async (_, { rejectWithValue }) => {
+    const refreshToken = localStorage.getItem("refresh");
+    if (!refreshToken) {
+      return;
+    }
+    try {
+      const response = await api.post("/auth/refresh", { refreshToken });
+      const data = response.data;
+      return data;
+    } catch (error) {
+      tokenManager.clear();
+      return rejectWithValue("Сеанс истек");
+    }
+  }
+);
+
+export const logOut = createAsyncThunk("user/logout", async () => {
+  try {
+    const refreshToken = localStorage.getItem("refresh");
+    await api.post("/user/logout", { refreshToken });
+  } catch (error) {
+    console.log("Ошибка при выходе", error);
+    throw error;
+  }
+});
