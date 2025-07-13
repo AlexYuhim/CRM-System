@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { logOut, refreshToken, signIn, signUp } from "./thunk";
 import { tokenManager } from "../TokenManager";
+import { UserRegistration } from "@/types/types";
 
 interface InitialState {
   accessToken?: string;
@@ -10,6 +11,7 @@ interface InitialState {
   isLoading?: boolean;
   error?: string | null;
   isShowPopUp?: boolean;
+  formData?: UserRegistration;
 }
 
 const initialState: InitialState = {
@@ -20,6 +22,13 @@ const initialState: InitialState = {
   isRegistrationForm: false,
   error: null,
   isShowPopUp: false,
+  formData: {
+    login: "",
+    username: "",
+    password: "",
+    email: "",
+    phoneNumber: "",
+  },
 };
 // создаем slice который будет хранить состояние об авторизации
 export const authSlice = createSlice({
@@ -35,6 +44,9 @@ export const authSlice = createSlice({
     },
     showPopUp: (state, action: PayloadAction<boolean>) => {
       state.isShowPopUp = action.payload;
+    },
+    setFormData: (state, action: PayloadAction<UserRegistration>) => {
+      state.formData = action.payload;
     },
   },
   extraReducers(builder) {
@@ -85,4 +97,5 @@ export const authSlice = createSlice({
       );
   },
 });
-export const { clearError, toggleForm, showPopUp } = authSlice.actions;
+export const { clearError, toggleForm, showPopUp, setFormData } =
+  authSlice.actions;

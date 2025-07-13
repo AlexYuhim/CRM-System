@@ -23,7 +23,11 @@ function App() {
   }, [dispatch]);
 
   if (isLoading || isCheckingAuth) {
-    return <Spiner />;
+    return (
+      <div className="appSpiner">
+        <Spiner />
+      </div>
+    );
   }
 
   return (

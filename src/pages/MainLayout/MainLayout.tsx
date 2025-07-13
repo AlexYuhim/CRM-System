@@ -1,8 +1,6 @@
 import { NavigationMenu } from "@/components/NavigationMenu/NavigationMenu";
 import { Col, Row } from "antd";
-import { Outlet, Route, Routes } from "react-router-dom";
-import { TodoBoardPages } from "./TodoBoardPages/TodoBoardPages";
-import { Profile } from "./Profile/Profile";
+import { Outlet } from "react-router-dom";
 
 export function MainLayout() {
   return (

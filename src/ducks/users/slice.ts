@@ -11,7 +11,7 @@ const initialState: Profile = {
   roles: [],
   phoneNumber: "",
 };
-// создаем slice который будет хранить данные
+// создаем slice который будет хранить данные пользователя
 export const profileSlice = createSlice({
   name: "Profile",
   initialState,

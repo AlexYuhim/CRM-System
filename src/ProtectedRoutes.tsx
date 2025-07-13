@@ -9,9 +9,6 @@ export const ProtectedRoutes = ({ isAuth }: IProtectedRoutesProps) => {
   const { authenticated } = useAppSelector((store) => store.auth);
   const location = useLocation();
 
-  console.log("isAuth", isAuth);
-  console.log("authenticated", authenticated);
-
   if (isAuth && !authenticated) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }

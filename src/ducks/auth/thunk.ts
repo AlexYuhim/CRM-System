@@ -3,7 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { tokenManager } from "../TokenManager";
 import { api } from "@/api/api.crud";
 import axios from "axios";
-import { clearError, showPopUp, toggleForm } from "./slice";
+import { clearError, setFormData, showPopUp, toggleForm } from "./slice";
 
 export const signUp = createAsyncThunk(
   "auth/signUp",
@@ -14,6 +14,15 @@ export const signUp = createAsyncThunk(
       dispatch(clearError());
       dispatch(showPopUp(true));
       const data: UserRegistration = response.data;
+      dispatch(
+        setFormData({
+          login: "",
+          username: "",
+          password: "",
+          email: "",
+          phoneNumber: "",
+        })
+      );
 
       return data;
     } catch (error) {
@@ -21,7 +30,12 @@ export const signUp = createAsyncThunk(
 
       if (axios.isAxiosError(error)) {
         dispatch(toggleForm(true));
-        return rejectWithValue(error.response?.data);
+        if (error.status === 409) {
+          dispatch(setFormData({ ...dataRequest, login: "", email: "" }));
+          return rejectWithValue(
+            "Пользователь с таким логином или почтой  уже существует"
+          );
+        }
       }
       return rejectWithValue("Неизвестная ошибка");
     }
@@ -39,7 +53,8 @@ export const signIn = createAsyncThunk(
       return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data);
+        if (error.status === 401)
+          return rejectWithValue("неверный логин или пароль");
       }
       return rejectWithValue("Неизвестная ошибка");
     }
