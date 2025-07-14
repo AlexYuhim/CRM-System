@@ -12,14 +12,9 @@ export function Profile() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <div>username : {profile.username}</div>
+      <div>Имя пользователя : {profile.username}</div>
       <div>email : {profile.email}</div>
-      <div> date : {profile.date}</div>
-      <div> isBlocked : {profile.isBlocked.toString()}</div>
-      <div>roles : {profile.roles}</div>
-      <div>phoneNumber : {profile.phoneNumber}</div>
-      <div>id : {profile.id}</div>
-      <h1>Приvет кому не лень!</h1>
+      <div>телефон : {profile.phoneNumber}</div>
     </div>
   );
 }

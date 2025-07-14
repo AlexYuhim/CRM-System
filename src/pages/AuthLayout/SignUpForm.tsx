@@ -7,7 +7,7 @@ import { UserRegistration } from "@/types/types";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { signUp } from "@/ducks/auth";
 import { clearError, toggleForm } from "@/ducks/auth/slice";
-
+import type { Rule } from "antd/es/form";
 const {
   MIN_CHAR_LOGIN,
   MAX_CHAR_LOGIN,
@@ -16,6 +16,15 @@ const {
   MIN_CHAR_NAME_USER,
   MAX_CHAR_NAME_USER,
 } = VALIDATE_CHAR_FORM_REGISTRATION;
+
+const phoneValidator = (_: Rule, value: string) => {
+  if (!value) return Promise.reject("Введите номер телефона");
+  const regex = /^\+?[0-9\s\-\(\)]{10,15}$/;
+  if (!regex.test(value)) {
+    return Promise.reject("Некорректный формат телефона");
+  }
+  return Promise.resolve();
+};
 
 export const SignUpForm = () => {
   const dispatch = useAppDispatch();
@@ -167,8 +176,12 @@ export const SignUpForm = () => {
           label="номер телефона"
           name="phoneNumber"
           initialValue={formData?.phoneNumber}
+          rules={[
+            { required: true, message: "Обязательное поле" },
+            { validator: phoneValidator },
+          ]}
         >
-          <Input style={{ width: "100%" }} />
+          <Input placeholder="+7 (999) 123-45-67" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
