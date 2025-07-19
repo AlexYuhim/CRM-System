@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Menu } from "antd";
 import type { MenuProps } from "antd";
-import { LogoutButton } from "../LogoutButton/LogoutButton";
+import { LogoutButton } from "@/components/LogoutButton/LogoutButton";
 
 type MenuItem = Required<MenuProps>["items"][number];
 

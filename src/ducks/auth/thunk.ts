@@ -1,7 +1,7 @@
 import { AuthData, Token, UserRegistration } from "@/types/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { tokenManager } from "../TokenManager";
-import { api } from "@/api/api.crud";
+import { apiTodo } from "@/api/axiosInstance";
 import axios from "axios";
 import { clearError, setFormData, showPopUp, toggleForm } from "./slice";
 
@@ -9,7 +9,7 @@ export const signUp = createAsyncThunk(
   "auth/signUp",
   async (dataRequest: UserRegistration, { dispatch, rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signup", dataRequest);
+      const response = await apiTodo.post("/auth/signup", dataRequest);
       dispatch(toggleForm(false));
       dispatch(clearError());
       dispatch(showPopUp(true));
@@ -46,7 +46,7 @@ export const signIn = createAsyncThunk(
   "auth/signin",
   async (dataRequest: AuthData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signin", dataRequest);
+      const response = await apiTodo.post("/auth/signin", dataRequest);
       dispatch(toggleForm(false));
       const data: Token = response.data;
 
@@ -69,7 +69,7 @@ export const refreshToken = createAsyncThunk(
       return;
     }
     try {
-      const response = await api.post("/auth/refresh", { refreshToken });
+      const response = await apiTodo.post("/auth/refresh", { refreshToken });
       const data = response.data;
       return data;
     } catch (error) {
@@ -82,7 +82,7 @@ export const refreshToken = createAsyncThunk(
 export const logOut = createAsyncThunk("user/logout", async () => {
   try {
     const refreshToken = localStorage.getItem("refresh");
-    await api.post("/user/logout", { refreshToken });
+    await apiTodo.post("/user/logout", { refreshToken });
   } catch (error) {
     console.log("Ошибка при выходе", error);
     throw error;

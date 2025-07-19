@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { addTodo } from "@/api/api.crud";
+import { addTodo } from "@/api/axiosInstance";
 import { ITodoList } from "@/types/types";
 import { VALIDATE_CHAR_TODO } from "@/constants/constants";
 import { Button, Form, Input, Row, Col } from "antd";

@@ -1,15 +1,13 @@
 class TokenManager {
-  #accessToken: string | null = null;
-
+  constructor(private accessToken: string | null) {}
   setAccessToken(token: string): void {
-    this.#accessToken = token;
+    this.accessToken = token;
   }
   getAccessToken(): string | null {
-    return this.#accessToken;
+    return this.accessToken;
   }
-  clear(): void {
-    this.#accessToken = null;
+  clear() {
+    this.accessToken = null;
   }
 }
-
-export const tokenManager = new TokenManager();
+export const tokenManager = new TokenManager(null);

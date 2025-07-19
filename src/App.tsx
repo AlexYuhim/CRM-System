@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { refreshToken } from "./ducks/auth";
 import { useAppDispatch, useAppSelector } from "./ducks/hooks";
 import { Spiner } from "./components/Spiner/Spiner";
+import { SignInForm } from "./pages/AuthLayout/SignInForm";
+import { SignUpForm } from "./pages/AuthLayout/SignUpForm";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -33,10 +35,11 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route element={<ProtectedRoutes isAuth={false} />}>
-          <Route path="/" element={<AuthLayout />} />
+        <Route element={<AuthLayout />}>
+          <Route path="/auth/login" element={<SignInForm />} />
+          <Route path="/auth/register" element={<SignUpForm />} />
         </Route>
-        <Route element={<ProtectedRoutes isAuth={true} />}>
+        <Route element={<ProtectedRoutes />}>
           <Route element={<MainLayout />}>
             <Route path="/todos" element={<TodoBoardPages />} />
             <Route path="user/profile" element={<Profile />} />

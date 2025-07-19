@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
 import style from "./AuthLayout.module.css";
 
@@ -6,8 +6,9 @@ import { Button, Form, Input } from "antd";
 import { UserRegistration } from "@/types/types";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { signUp } from "@/ducks/auth";
-import { clearError, toggleForm } from "@/ducks/auth/slice";
+import { clearError, showPopUp, toggleForm } from "@/ducks/auth/slice";
 import type { Rule } from "antd/es/form";
+import { Link } from "react-router-dom";
 const {
   MIN_CHAR_LOGIN,
   MAX_CHAR_LOGIN,
@@ -29,13 +30,16 @@ const phoneValidator = (_: Rule, value: string) => {
 export const SignUpForm = () => {
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<UserRegistration>();
-  const { error, authenticated, formData } = useAppSelector(
+  const { error, authenticated, formData, isShowPopUp } = useAppSelector(
     (state) => state.auth
   );
-
   async function submmitSignUpForm(dataUserRegistration: UserRegistration) {
     await dispatch(signUp(dataUserRegistration));
   }
+
+  const switchShowPopup = (show: boolean) => {
+    dispatch(showPopUp(show));
+  };
 
   useEffect(() => {
     if (authenticated) {
@@ -44,6 +48,16 @@ export const SignUpForm = () => {
     }
   }, [authenticated, dispatch]);
 
+  if (isShowPopUp) {
+    return (
+      <>
+        <h3>вы успешно зарегистрировались</h3>
+        <Link to="/auth/login" onClick={() => switchShowPopup(false)}>
+          прейдите по ссылки для авторизации
+        </Link>
+      </>
+    );
+  }
   return (
     <>
       {error && (
@@ -55,6 +69,12 @@ export const SignUpForm = () => {
           </button>
         </div>
       )}
+      <div className={style.titleText}>
+        <div>
+          <h3>Зарегистрируйте свою учетную запись</h3>
+          <h5>Начните следить, что происходит с вашим бизнесом</h5>
+        </div>
+      </div>
       <Form
         form={form}
         style={{ rowGap: "16px" }}
@@ -176,10 +196,7 @@ export const SignUpForm = () => {
           label="номер телефона"
           name="phoneNumber"
           initialValue={formData?.phoneNumber}
-          rules={[
-            { required: true, message: "Обязательное поле" },
-            { validator: phoneValidator },
-          ]}
+          rules={[{ validator: phoneValidator }]}
         >
           <Input placeholder="+7 (999) 123-45-67" />
         </Form.Item>
@@ -189,6 +206,9 @@ export const SignUpForm = () => {
           </Button>
         </Form.Item>
       </Form>
+      <div className={style.linkSwitchForm}>
+        <Link to="/auth/login">Авторизация</Link>
+      </div>
     </>
   );
 };

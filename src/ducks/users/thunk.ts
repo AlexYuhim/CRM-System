@@ -1,10 +1,10 @@
 import { Profile } from "@/types/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/api/api.crud";
+import { apiAuth } from "@/api/axiosInstance";
 
 export const getProfile = createAsyncThunk("user/profile", async () => {
   try {
-    const response = await api.get("/user/profile");
+    const response = await apiAuth.get("/user/profile");
     const data: Profile = response.data;
 
     return data;
