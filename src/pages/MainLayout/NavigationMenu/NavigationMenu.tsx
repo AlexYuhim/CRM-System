@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import { Menu } from "antd";
 import type { MenuProps } from "antd";
+import { LogoutButton } from "@/components/LogoutButton/LogoutButton";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
 const items: MenuItem[] = [
-  { key: "1", label: <Link to="/">список задач</Link> },
-  { key: "2", label: <Link to="/profile">профиль</Link> },
+  { key: "1", label: <Link to="/todos">список задач</Link> },
+  { key: "2", label: <Link to="user/profile">личный кабинет</Link> },
+  { key: "3", label: <LogoutButton /> },
 ];
 
 export function NavigationMenu() {

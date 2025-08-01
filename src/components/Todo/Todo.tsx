@@ -1,11 +1,11 @@
 import style from "./Todo.module.css";
 import React, { FC, useState } from "react";
-import { deleteTodo, updateTodo } from "@/api/api.crud";
+import { deleteTodo, updateTodo } from "@/api/axiosInstance";
 import { ITodo } from "@/types/types";
 import { Button, Col, Form, Input, Row } from "antd";
-import { VALIDATE_CHAR } from "@/constants/constants";
+import { VALIDATE_CHAR_TODO } from "@/constants/constants";
 
-const { MIN, MAX } = VALIDATE_CHAR;
+const { MIN, MAX } = VALIDATE_CHAR_TODO;
 
 export interface ITodoProps {
   intervalUpdate?: number | undefined;

@@ -1,4 +1,5 @@
 import { API_URL } from "@/constants/constants";
+import { tokenManager } from "@/ducks/TokenManager";
 import {
   MetaResponse,
   TodoRequest,
@@ -8,16 +9,30 @@ import {
 } from "@/types/types";
 import axios from "axios";
 
-const instansCRUD = axios.create({
+export const apiTodo = axios.create({
   baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
+});
+
+export const apiAuth = axios.create({
+  baseURL: API_URL,
+  headers: { accept: "application/json", "Content-Type": "application/json" },
+});
+//перехваываю запрос и автоматически подставляю заголовок Authorization = `Bearer ${token}`
+apiAuth.interceptors.request.use((config) => {
+  const token = tokenManager.getAccessToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export async function metaResponse(
   statusTodos: StatusWork
 ): Promise<MetaResponse<ITodo, TodoInfo>> {
+  //получаем все данные
   try {
-    const response = await instansCRUD.get("/todos", {
+    const response = await apiTodo.get("/todos", {
       params: { filter: statusTodos },
     });
     const data: MetaResponse<ITodo, TodoInfo> = response.data;
@@ -29,8 +44,9 @@ export async function metaResponse(
 }
 
 export async function addTodo(todoRequest: TodoRequest) {
+  //добавляем туду
   try {
-    const response = await instansCRUD.post("/todos", todoRequest);
+    const response = await apiTodo.post("/todos", todoRequest);
 
     const data = response.data;
     return data;
@@ -40,16 +56,18 @@ export async function addTodo(todoRequest: TodoRequest) {
 }
 
 export async function deleteTodo(id: number) {
+  //удаляем
   try {
-    await instansCRUD.delete(`/todos/${id}`);
+    await apiTodo.delete(`/todos/${id}`);
   } catch (error) {
     console.log("ошибка удаления задачи", error);
   }
 }
 
 export async function updateTodo(id: number, todoRequest: TodoRequest) {
+  //редактируем
   try {
-    await instansCRUD.put(`/todos/${id}`, todoRequest);
+    await apiTodo.put(`/todos/${id}`, todoRequest);
   } catch (error) {
     console.log("ошибка изменения записи", error);
   }

@@ -1,10 +1,10 @@
 import { FC } from "react";
-import { addTodo } from "@/api/api.crud";
+import { addTodo } from "@/api/axiosInstance";
 import { ITodoList } from "@/types/types";
-import { VALIDATE_CHAR } from "@/constants/constants";
+import { VALIDATE_CHAR_TODO } from "@/constants/constants";
 import { Button, Form, Input, Row, Col } from "antd";
 
-const { MIN, MAX } = VALIDATE_CHAR;
+const { MIN, MAX } = VALIDATE_CHAR_TODO;
 
 interface FormValueProp {
   inputAddTask: string;
