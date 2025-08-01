@@ -17,20 +17,19 @@ import { SignUpForm } from "./pages/AuthLayout/SignUpForm";
 function App() {
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector((store) => store.auth);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  // const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   useEffect(() => {
-    dispatch(refreshToken())
-      .unwrap()
-      .finally(() => setIsCheckingAuth(false));
+    dispatch(refreshToken()).unwrap();
+    // .finally(() => setIsCheckingAuth(false));
   }, [dispatch]);
 
-  if (isLoading || isCheckingAuth) {
-    return (
-      <div className="appSpiner">
-        <Spiner />
-      </div>
-    );
-  }
+  // if (isLoading || isCheckingAuth) {
+  //   return (
+  //     <div className="appSpiner">
+  //       <Spiner />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="App">

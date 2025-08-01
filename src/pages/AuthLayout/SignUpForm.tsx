@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
 import style from "./AuthLayout.module.css";
 
-import { Button, Form, Input } from "antd";
+import { Button, Form, Modal, Input, message } from "antd";
 import { UserRegistration } from "@/types/types";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { signUp } from "@/ducks/auth";
-import { clearError, showPopUp, toggleForm } from "@/ducks/auth/slice";
 import type { Rule } from "antd/es/form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const {
   MIN_CHAR_LOGIN,
   MAX_CHAR_LOGIN,
@@ -19,7 +18,7 @@ const {
 } = VALIDATE_CHAR_FORM_REGISTRATION;
 
 const phoneValidator = (_: Rule, value: string) => {
-  if (!value) return Promise.reject("Введите номер телефона");
+  if (!value) return Promise.resolve();
   const regex = /^\+?[0-9\s\-\(\)]{10,15}$/;
   if (!regex.test(value)) {
     return Promise.reject("Некорректный формат телефона");
@@ -28,47 +27,36 @@ const phoneValidator = (_: Rule, value: string) => {
 };
 
 export const SignUpForm = () => {
+  const [isModalSucessOpen, setIsModalSucessOpen] = useState(false);
+  const [isModalErrorOpen, setIsModalErrorOpen] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<UserRegistration>();
-  const { error, authenticated, formData, isShowPopUp } = useAppSelector(
-    (state) => state.auth
-  );
+  const { error, authenticated } = useAppSelector((state) => state.auth);
+
   async function submmitSignUpForm(dataUserRegistration: UserRegistration) {
-    await dispatch(signUp(dataUserRegistration));
+    try {
+      await dispatch(signUp(dataUserRegistration)).unwrap();
+      setIsModalSucessOpen(true);
+      form.resetFields();
+    } catch (error) {
+      setIsModalErrorOpen(true);
+    }
   }
 
-  const switchShowPopup = (show: boolean) => {
-    dispatch(showPopUp(show));
+  const handleOkSucessModal = () => {
+    setIsModalSucessOpen(false);
+    navigate("/auth/login");
+  };
+  const handleCancelSucessModal = () => {
+    setIsModalSucessOpen(false);
+  };
+  const handleOkErr = () => {
+    setIsModalErrorOpen(false);
   };
 
-  useEffect(() => {
-    if (authenticated) {
-      dispatch(clearError());
-      dispatch(toggleForm(false));
-    }
-  }, [authenticated, dispatch]);
-
-  if (isShowPopUp) {
-    return (
-      <>
-        <h3>вы успешно зарегистрировались</h3>
-        <Link to="/auth/login" onClick={() => switchShowPopup(false)}>
-          прейдите по ссылки для авторизации
-        </Link>
-      </>
-    );
-  }
   return (
     <>
-      {error && (
-        <div className={style.errorMessage}>
-          {error}
-
-          <button type="button" onClick={() => dispatch(clearError())}>
-            &times;
-          </button>
-        </div>
-      )}
       <div className={style.titleText}>
         <div>
           <h3>Зарегистрируйте свою учетную запись</h3>
@@ -86,7 +74,6 @@ export const SignUpForm = () => {
         <Form.Item
           name="username"
           label="имя пользоватиля"
-          initialValue={formData?.username}
           rules={[
             {
               required: true,
@@ -108,7 +95,6 @@ export const SignUpForm = () => {
         <Form.Item
           name="email"
           label="Почта"
-          initialValue={formData?.email}
           rules={[
             {
               type: "email",
@@ -126,7 +112,6 @@ export const SignUpForm = () => {
         <Form.Item
           name="login"
           label="Логин"
-          initialValue={formData?.login}
           rules={[
             {
               pattern: /^[a-zA-Z]+$/,
@@ -149,7 +134,6 @@ export const SignUpForm = () => {
         <Form.Item
           name="password"
           label="пароль"
-          initialValue={formData?.password}
           rules={[
             {
               min: MIN_CHAR_PASSWORD,
@@ -172,7 +156,6 @@ export const SignUpForm = () => {
         <Form.Item
           name="confirm"
           label="Подтвердите пароль"
-          initialValue={formData?.password}
           hasFeedback
           rules={[
             {
@@ -195,7 +178,6 @@ export const SignUpForm = () => {
         <Form.Item
           label="номер телефона"
           name="phoneNumber"
-          initialValue={formData?.phoneNumber}
           rules={[{ validator: phoneValidator }]}
         >
           <Input placeholder="+7 (999) 123-45-67" />
@@ -206,6 +188,34 @@ export const SignUpForm = () => {
           </Button>
         </Form.Item>
       </Form>
+      <Modal
+        title="Успешная регистрация!"
+        open={isModalSucessOpen}
+        onOk={handleOkSucessModal}
+        onCancel={handleCancelSucessModal}
+        footer={[
+          <Button key="stay" onClick={handleCancelSucessModal}>
+            Зарегистрировать еще одного
+          </Button>,
+          <Button key="login" type="primary" onClick={handleOkSucessModal}>
+            Перейти к авторизации
+          </Button>,
+        ]}
+      >
+        <p>Вы успешно зарегистрировались. Хотите войти в систему?</p>
+      </Modal>
+      <Modal
+        title="Ошибка регистрация!"
+        open={isModalErrorOpen}
+        onOk={handleOkErr}
+        footer={[
+          <Button key="login" type="primary" onClick={handleOkErr}>
+            OK
+          </Button>,
+        ]}
+      >
+        <p>{error}</p>
+      </Modal>
       <div className={style.linkSwitchForm}>
         <Link to="/auth/login">Авторизация</Link>
       </div>

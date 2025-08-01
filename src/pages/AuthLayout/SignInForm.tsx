@@ -1,10 +1,9 @@
 import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
 import { signIn } from "@/ducks/auth";
-import { clearError, toggleForm } from "@/ducks/auth/slice";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { AuthData } from "@/types/types";
-import { Button, Form, Input } from "antd";
-import { useEffect } from "react";
+import { Button, Form, Input, Modal } from "antd";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import style from "./AuthLayout.module.css";
 
@@ -17,39 +16,29 @@ export const SignInForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { authenticated, error } = useAppSelector((store) => store.auth);
-  useEffect(() => {
-    if (authenticated) {
-      dispatch(toggleForm(false));
-    }
-    return () => {
-      dispatch(clearError());
-    };
-  }, [authenticated, dispatch]);
 
-  const submmitSignInForm = (authData: AuthData) => {
-    dispatch(signIn(authData)).unwrap();
+  const [isModalErrorOpen, setIsModalErrorOpen] = useState(false);
 
-    const from = location.state?.from?.pathname || "/todos";
-    navigate(from, { replace: true });
-
-    if (authenticated) {
-      const from = location.state?.from?.pathname;
+  async function submmitSignInForm(authData: AuthData) {
+    try {
+      await dispatch(signIn(authData)).unwrap();
+      const from = location.state?.from?.pathname || "/todos";
       navigate(from, { replace: true });
+      if (authenticated) {
+        const from = location.state?.from?.pathname;
+        navigate(from, { replace: true });
+      }
+      form.resetFields();
+    } catch (error) {
+      setIsModalErrorOpen(true);
     }
-    form.resetFields();
-  };
+  }
 
+  const handleOkErr = () => {
+    setIsModalErrorOpen(false);
+  };
   return (
     <>
-      {error && (
-        <div className={style.errorMessage}>
-          {error}
-
-          <button type="button" onClick={() => dispatch(clearError())}>
-            &times;
-          </button>
-        </div>
-      )}
       <div className={style.titleText}>
         <div>
           <h3>Войдите в свою учетную запись</h3>
@@ -110,6 +99,20 @@ export const SignInForm = () => {
           </Button>
         </Form.Item>
       </Form>
+
+      <Modal
+        title="Ошибка регистрация!"
+        open={isModalErrorOpen}
+        onOk={handleOkErr}
+        footer={[
+          <Button key="login" type="primary" onClick={handleOkErr}>
+            OK
+          </Button>,
+        ]}
+      >
+        <p>{error}</p>
+      </Modal>
+
       <div className={style.linkSwitchForm}>
         <Link to="/auth/register">Регистрация</Link>
       </div>

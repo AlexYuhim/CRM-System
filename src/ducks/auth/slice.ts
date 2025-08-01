@@ -7,10 +7,8 @@ interface InitialState {
   accessToken?: string;
   refreshToken?: string;
   authenticated?: boolean;
-  isRegistrationForm?: boolean;
   isLoading?: boolean;
   error?: string | null;
-  isShowPopUp?: boolean;
   formData?: UserRegistration;
 }
 
@@ -19,16 +17,7 @@ const initialState: InitialState = {
   refreshToken: localStorage.getItem("refresh") || undefined,
   authenticated: false,
   isLoading: false,
-  isRegistrationForm: false,
   error: null,
-  isShowPopUp: false,
-  formData: {
-    login: "",
-    username: "",
-    password: "",
-    email: "",
-    phoneNumber: "",
-  },
 };
 // создаем slice который будет хранить состояние об авторизации
 export const authSlice = createSlice({
@@ -36,18 +25,6 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     // обработка синхронщины
-    clearError: (state) => {
-      state.error = null;
-    },
-    toggleForm: (state, action: PayloadAction<boolean>) => {
-      state.isRegistrationForm = action.payload;
-    },
-    showPopUp: (state, action: PayloadAction<boolean>) => {
-      state.isShowPopUp = action.payload;
-    },
-    setFormData: (state, action: PayloadAction<UserRegistration>) => {
-      state.formData = action.payload;
-    },
   },
   extraReducers(builder) {
     // обработка асинхронщины
@@ -97,5 +74,3 @@ export const authSlice = createSlice({
       );
   },
 });
-export const { clearError, toggleForm, showPopUp, setFormData } =
-  authSlice.actions;
