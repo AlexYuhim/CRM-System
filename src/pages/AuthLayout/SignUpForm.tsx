@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
 import style from "./AuthLayout.module.css";
 
@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { signUp } from "@/ducks/auth";
 import type { Rule } from "antd/es/form";
 import { Link, useNavigate } from "react-router-dom";
+import { phoneValidator } from "@/utils/phoneValidator";
 const {
   MIN_CHAR_LOGIN,
   MAX_CHAR_LOGIN,
@@ -17,22 +18,13 @@ const {
   MAX_CHAR_NAME_USER,
 } = VALIDATE_CHAR_FORM_REGISTRATION;
 
-const phoneValidator = (_: Rule, value: string) => {
-  if (!value) return Promise.resolve();
-  const regex = /^\+?[0-9\s\-\(\)]{10,15}$/;
-  if (!regex.test(value)) {
-    return Promise.reject("Некорректный формат телефона");
-  }
-  return Promise.resolve();
-};
-
 export const SignUpForm = () => {
   const [isModalSucessOpen, setIsModalSucessOpen] = useState(false);
   const [isModalErrorOpen, setIsModalErrorOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<UserRegistration>();
-  const { error, authenticated } = useAppSelector((state) => state.auth);
+  const { error } = useAppSelector((state) => state.auth);
 
   async function submmitSignUpForm(dataUserRegistration: UserRegistration) {
     try {

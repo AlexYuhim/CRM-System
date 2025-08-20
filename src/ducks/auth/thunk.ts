@@ -99,7 +99,7 @@ export const refreshToken = createAsyncThunk(
   }
 );
 
-export const logOut = createAsyncThunk("user/logout", async () => {
+export const logOut = createAsyncThunk("/user/logout", async () => {
   try {
     await apiAuth.post("/user/logout");
   } catch (error) {

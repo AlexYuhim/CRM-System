@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
-import { getProfile } from "@/ducks/users";
+import { getProfile } from "@/ducks/user";
 import { useEffect } from "react";
 
 export function Profile() {
@@ -15,6 +15,7 @@ export function Profile() {
       <div>Имя пользователя : {profile.username}</div>
       <div>email : {profile.email}</div>
       <div>телефон : {profile.phoneNumber}</div>
+      <div>Роль : {profile.roles}</div>
     </div>
   );
 }

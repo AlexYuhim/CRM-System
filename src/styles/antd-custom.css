@@ -17,3 +17,6 @@ img {
 .ant-list-bordered.ant-list-lg .ant-list-item {
   padding: 10px;
 }
+.ant-popconfirm-buttons {
+  display: flex;
+}

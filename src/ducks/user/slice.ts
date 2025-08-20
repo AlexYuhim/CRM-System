@@ -10,6 +10,7 @@ const initialState: Profile = {
   isBlocked: false,
   roles: [],
   phoneNumber: "",
+  isLoaded: false,
 };
 // создаем slice который будет хранить данные пользователя
 export const profileSlice = createSlice({
@@ -23,6 +24,7 @@ export const profileSlice = createSlice({
     builder.addMatcher(getProfile.fulfilled.match, (state, action) => {
       if (action.payload) {
         Object.assign(state, action.payload);
+        state.isLoaded = true;
       }
     });
   },

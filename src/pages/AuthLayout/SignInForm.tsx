@@ -2,8 +2,8 @@ import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
 import { signIn } from "@/ducks/auth";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { AuthData } from "@/types/types";
-import { Button, Form, Input, Modal } from "antd";
-import { useState } from "react";
+import { Button, Form, Input, message, Modal } from "antd";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import style from "./AuthLayout.module.css";
 
@@ -19,15 +19,16 @@ export const SignInForm = () => {
 
   const [isModalErrorOpen, setIsModalErrorOpen] = useState(false);
 
+  useEffect(() => {
+    if (authenticated) {
+      const from = location.state?.from?.pathname || "/todos";
+      navigate(from, { replace: true });
+    }
+  }, [authenticated, navigate, location]);
+
   async function submmitSignInForm(authData: AuthData) {
     try {
       await dispatch(signIn(authData)).unwrap();
-      const from = location.state?.from?.pathname || "/todos";
-      navigate(from, { replace: true });
-      if (authenticated) {
-        const from = location.state?.from?.pathname;
-        navigate(from, { replace: true });
-      }
       form.resetFields();
     } catch (error) {
       setIsModalErrorOpen(true);
