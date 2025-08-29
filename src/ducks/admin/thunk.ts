@@ -1,22 +1,8 @@
-import {
-  MetaResponseUsers,
-  User,
-  UserFilters,
-  UserRequest,
-} from "@/types/types";
+import { MetaResponseUsers, User, UserRequest } from "@/types/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiAuth } from "@/api/axiosInstance";
 import axios, { AxiosRequestConfig } from "axios";
-
-const userFiltersResponsDefault: AxiosRequestConfig = {
-  params: {
-    search: "",
-    sortBy: "",
-    sortOrder: "",
-    limit: "",
-    offset: "",
-  },
-};
+import { saveUserFiltersQueryParams } from "./slice";
 
 type UpdateUserArgs = {
   userData: UserRequest;
@@ -25,19 +11,23 @@ type UpdateUserArgs = {
 
 export const getAllUsers = createAsyncThunk(
   "admin/users",
-  async (userFiltersaRespons: AxiosRequestConfig) => {
+  async (userFiltersaRespons: AxiosRequestConfig, thunkAPI) => {
     try {
-      const userFilters: AxiosRequestConfig = {
-        params: {
-          ...userFiltersResponsDefault.params,
-          ...userFiltersaRespons?.params,
-        },
-      };
-      console.log("userFilters", userFilters);
-
-      const response = await apiAuth.get("admin/users", userFilters);
+      const response = await apiAuth.get("admin/users", userFiltersaRespons);
       const data: MetaResponseUsers<User> = response.data;
+      console.log("data THUNK", data);
 
+      if (data.meta.totalAmount === 0) {
+        thunkAPI.dispatch(saveUserFiltersQueryParams({}));
+      }
+      if (data.data === null) {
+        return thunkAPI.rejectWithValue(
+          `Имя ${userFiltersaRespons.params.search} не найдено в базе`
+        );
+      }
+      thunkAPI.dispatch(
+        saveUserFiltersQueryParams(userFiltersaRespons.params || {})
+      );
       return data;
     } catch (error) {
       console.log("Ошибка запроса данных пользователя", error);
@@ -124,7 +114,7 @@ export const deleteUser = createAsyncThunk(
 );
 
 export const updateUser = createAsyncThunk(
-  `/admin/users/{id}`,
+  "/admin/users/updateUser",
   async ({ userData, userId }: UpdateUserArgs, { rejectWithValue }) => {
     try {
       await apiAuth.put(`/admin/users/${userId}`, userData);
@@ -141,7 +131,7 @@ export const updateUser = createAsyncThunk(
             );
           case 403:
             return rejectWithValue("Недостаточно прав.");
-          case 403:
+          case 404:
             return rejectWithValue("Пользователь не найден.");
           case 500:
             return rejectWithValue("Внутренняя ошибка сервера.");

@@ -1,17 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "@/types/types";
 import { getAllUsers, getUserPages, updateUser } from "./thunk";
 
-interface PaginationConfig {
-  totalAmount: number;
-  currentPage: number;
-  pageSize: number;
+interface UserFilters {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  isBlocked?: boolean;
+  limit?: number; // сколько на странице
+  offset?: number; // страницу
+  totalAmount?: number;
 }
 
 interface initialStateAdminPanel {
   allUser: User[];
   user: User;
-  paginationData: PaginationConfig;
+  userFilters: UserFilters;
+  error: string | null;
 }
 
 const initialState: initialStateAdminPanel = {
@@ -25,27 +30,36 @@ const initialState: initialStateAdminPanel = {
     roles: [],
     phoneNumber: "",
   },
-  paginationData: {
-    totalAmount: 0,
-    currentPage: 1,
-    pageSize: 20,
-  },
+  userFilters: {},
+  error: null,
 };
 // создаем slice который будет хранить данные всех юзеров
 export const adminSlice = createSlice({
   name: "admin",
   initialState,
   reducers: {
+    clearError(state) {
+      state.error = null;
+    },
+    saveUserFiltersQueryParams(
+      state,
+      action: PayloadAction<Partial<UserFilters>>
+    ) {
+      state.userFilters = { ...state.userFilters, ...action.payload };
+    },
     // обработка синхронщины
   },
   extraReducers(builder) {
     // обработка асинхронщины
-    builder.addMatcher(getAllUsers.fulfilled.match, (state, action) => {
-      console.log("action.payload", action.payload.meta);
+    builder
+      .addCase(getAllUsers.fulfilled, (state, action) => {
+        state.allUser = action.payload.data ? [...action.payload.data] : [];
+        state.userFilters.totalAmount = action.payload.meta.totalAmount;
+      })
+      .addCase(getAllUsers.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Ошибка загрузки";
+      });
 
-      state.allUser = [...action.payload.data];
-      state.paginationData.totalAmount = action.payload.meta.totalAmount;
-    });
     builder.addMatcher(getUserPages.fulfilled.match, (state, action) => {
       if (action.payload) {
         state.user = action.payload;
@@ -58,3 +72,5 @@ export const adminSlice = createSlice({
     // });
   },
 });
+
+export const { saveUserFiltersQueryParams, clearError } = adminSlice.actions;
