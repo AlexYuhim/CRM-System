@@ -108,3 +108,7 @@ export interface UserRequest {
   email?: string;
   phoneNumber?: string;
 }
+
+export interface UserRolesRequest {
+  roles: Roles[];
+}

@@ -65,9 +65,7 @@ export function UserList() {
       <div>id пользвателя {`${id}`}</div>
       получено с бека :<div>username пользвателя : {userPages.username}</div>
       <div>email пользвателя : {userPages.email}</div>
-      <div>isBlocked пользвателя : {userPages.isBlocked.toString()}</div>
       <div>phoneNumber пользвателя : {userPages.phoneNumber}</div>
-      <div>roles пользвателя : {userPages.roles}</div>
       <button
         style={{ width: 256 }}
         onClick={() => handleClickBtnEditForm(true)}

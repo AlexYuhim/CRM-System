@@ -19,16 +19,9 @@ import {
   Row,
   Col,
   Input,
-  Select,
-  Checkbox,
 } from "antd";
 
-import type {
-  MenuProps,
-  TableColumnsType,
-  TableProps,
-  SelectProps,
-} from "antd";
+import type { MenuProps, TableColumnsType, TableProps } from "antd";
 import { Roles, User } from "@/types/types";
 import type { Key } from "antd/es/table/interface";
 import {
@@ -39,7 +32,10 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import type { TablePaginationConfig } from "antd/lib/table/interface";
+
 import { clearError } from "@/ducks/admin/slice";
+
+import RolesEdit from "./components/RolesEdit";
 
 export function Users() {
   const dispatch = useAppDispatch();
@@ -49,10 +45,13 @@ export function Users() {
   const totalAmount = useAppSelector(
     (store) => store.admin.userFilters.totalAmount
   );
-  const profile = useAppSelector((state) => state.profile);
-  console.log("profile", profile.roles);
+  const profile = useAppSelector((state) => state.profile.roles);
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
 
   const [searchValue, setSearchValue] = useState("");
+
   useEffect(() => {
     dispatch(
       getAllUsers({
@@ -63,8 +62,17 @@ export function Users() {
     );
   }, [dispatch]);
 
-  const [messageApi, contextHolder] = message.useMessage();
-  const navigate = useNavigate();
+  const itemsMenuSort: MenuProps["items"] = [
+    { key: "ASC", label: "По возрастанию" },
+    { key: "DESC", label: "По убыванию" },
+    { key: "none", label: "Сбросить сортировку" },
+  ];
+
+  const roleColors: Record<string, string> = {
+    ADMIN: "#4976F4",
+    MODERATOR: "#D28E3D",
+    USER: "#954BAF",
+  };
 
   async function handleUnBlocked(id: number) {
     try {
@@ -96,7 +104,6 @@ export function Users() {
     }
   }
 
-  console.log("userFilters", userFilters);
   async function handleDeleteUser(id: number) {
     try {
       await dispatch(deleteUser(id)).unwrap();
@@ -119,6 +126,7 @@ export function Users() {
       });
     }
   }
+
   const handleSearch = (): void => {
     if (!searchValue.trim()) {
       messageApi.open({
@@ -137,6 +145,7 @@ export function Users() {
       })
     );
   };
+
   useEffect(() => {
     if (errorStore) {
       messageApi.open({
@@ -167,43 +176,6 @@ export function Users() {
       }
     };
 
-  const roleColors: Record<string, string> = {
-    ADMIN: "#4976F4",
-    MODERATOR: "#D28E3D",
-    USER: "#954BAF",
-  };
-  const itemsMenuSort: MenuProps["items"] = [
-    { key: "ASC", label: "По возрастанию" },
-    { key: "DESC", label: "По убыванию" },
-    { key: "none", label: "Сбросить сортировку" },
-  ];
-
-  interface UserRoleSelectorProps {
-    selectedRoles: Roles[];
-    onChange: (roles: Roles[]) => void;
-  }
-
-  const rolesOptions: SelectProps["options"] = [
-    { label: "Админ", value: "admin" },
-    { label: "Пользователь", value: "user" },
-    { label: "Гость", value: "guest" },
-    { label: "Модератор", value: "moderator" },
-  ];
-
-  const UserRoleSelector: React.FC<UserRoleSelectorProps> = ({
-    selectedRoles,
-    onChange,
-  }) => (
-    <Select
-      mode="multiple"
-      placeholder=""
-      onChange={onChange}
-      style={{ minWidth: 50 }}
-      options={rolesOptions}
-      allowClear
-    />
-  );
-
   type TableRowSelection<T extends object = object> =
     TableProps<T>["rowSelection"];
   const columns: TableColumnsType<User> = [
@@ -214,6 +186,7 @@ export function Users() {
             display: "flex",
             width: "100%",
             justifyContent: "space-between",
+            gap: 30,
           }}
         >
           Имя
@@ -221,7 +194,14 @@ export function Users() {
             menu={{ items: itemsMenuSort, onClick: handleSort("username") }}
             trigger={["click"]}
           >
-            <a>
+            <a
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+                gap: 10,
+              }}
+            >
               сортировать
               <DownOutlined />
             </a>
@@ -237,6 +217,8 @@ export function Users() {
             display: "flex",
             width: "100%",
             justifyContent: "space-between",
+
+            gap: 30,
           }}
         >
           Email
@@ -244,7 +226,14 @@ export function Users() {
             menu={{ items: itemsMenuSort, onClick: handleSort("email") }}
             trigger={["click"]}
           >
-            <a>
+            <a
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+                gap: 10,
+              }}
+            >
               сортировать
               <DownOutlined />
             </a>
@@ -262,57 +251,80 @@ export function Users() {
       dataIndex: "roles",
       key: "roles",
       width: 500,
-      render: (roles: Roles[], record) => {
-        return (
-          <Space
-            wrap
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "8px",
-            }}
-          >
-            <div>
-              {roles.map((role) => (
-                <Tag color={roleColors[role] || "default"} key={role}>
-                  {role}
-                </Tag>
-              ))}
-            </div>
-            <button>ghbdftn</button>
+      render: (roles: Roles[], record: User) => (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "8px",
+          }}
+        >
+          <Space>
+            {roles.map((role) => (
+              <Tag color={roleColors[role] || "default"} key={role}>
+                {role}
+              </Tag>
+            ))}
           </Space>
-        );
-      },
+          {profile.includes(Roles.ADMIN) ? (
+            <RolesEdit
+              roles={roles}
+              record={record}
+              userFilters={userFilters}
+            />
+          ) : (
+            ""
+          )}
+        </div>
+      ),
     },
 
-    {
-      title: "Блокировка",
-      dataIndex: "isBlocked",
-      render: (isBlocked: boolean) => <Tag>{isBlocked ? "+" : "-"}</Tag>,
-    },
     {
       title: "Дата регистр",
       dataIndex: "date",
     },
 
     {
+      title: "Блокировка",
+      dataIndex: "isBlocked",
+      align: "center",
+      render: (isBlocked: boolean) => <Tag>{isBlocked ? "+" : "-"}</Tag>,
+    },
+    {
       title: "Действия",
       key: "actions",
       render: (_, record: User) => {
-        console.log("profile.roles", !profile.roles.includes(Roles.ADMIN));
+        console.log("profile.roles", !profile.includes(Roles.ADMIN));
         return (
-          <Button
-            disabled={!profile.roles.includes(Roles.ADMIN)}
-            onClick={() =>
+          <Popconfirm
+            title={
+              <div style={{ maxWidth: 200 }}>
+                <div style={{ marginBottom: 8 }}>
+                  {record.isBlocked
+                    ? ` разблокировать пользователя: ${record.username}?`
+                    : ` Блокируем пользователя: ${record.username}?`}
+                </div>
+                <Divider style={{ margin: "8px 0" }} />
+              </div>
+            }
+            onConfirm={() => {
               record.isBlocked
                 ? handleUnBlocked(record.id)
-                : handleBlocked(record.id)
-            }
+                : handleBlocked(record.id);
+            }}
+            okText="OK"
+            cancelText="Отмена"
+            placement="bottom"
+            icon={null}
           >
-            {record.isBlocked ? "разблокировать" : "блокировать"}
-          </Button>
+            <Button
+              disabled={!!(!profile.includes(Roles.ADMIN) && record.isBlocked)}
+            >
+              {record.isBlocked ? "разблокировать" : "блокировать"}
+            </Button>
+          </Popconfirm>
         );
       },
     },
@@ -329,18 +341,22 @@ export function Users() {
         </Button>
       ),
     },
+
     {
       title: "",
       key: "actions",
-      render: (_, record) =>
-        allUsers.length >= 1 ? (
-          <Popconfirm
-            title={`Удалить пользователя : ${record.username} ? `}
-            onConfirm={() => handleDeleteUser(record.id)}
-          >
-            <a style={{ color: "red" }}>Delete</a>
-          </Popconfirm>
-        ) : null,
+      render: (_, record) => {
+        if (allUsers.length >= 1 && profile.includes(Roles.ADMIN)) {
+          return (
+            <Popconfirm
+              title={`Удалить пользователя : ${record.username} ? `}
+              onConfirm={() => handleDeleteUser(record.id)}
+            >
+              <a style={{ color: "red" }}>Delete</a>
+            </Popconfirm>
+          );
+        }
+      },
     },
   ];
 
@@ -366,7 +382,7 @@ export function Users() {
     hideOnSinglePage: true,
     total: totalAmount,
   };
-  const handleTablrChange = (paginationObj: TablePaginationConfig) => {
+  const handleTableChange = (paginationObj: TablePaginationConfig) => {
     dispatch(
       getAllUsers({
         params: {
@@ -412,9 +428,13 @@ export function Users() {
               prefix={<SearchOutlined />}
               onPressEnter={handleSearch}
             />
-            <Dropdown menu={menuFilterProps}>
-              <Button icon={<FilterOutlined />}>Filter</Button>
-            </Dropdown>
+            {profile.includes(Roles.ADMIN) ? (
+              <Dropdown menu={menuFilterProps}>
+                <Button icon={<FilterOutlined />}>Filter</Button>
+              </Dropdown>
+            ) : (
+              ""
+            )}
           </Space>
         </Col>
       </Row>
@@ -424,7 +444,7 @@ export function Users() {
         columns={columns}
         dataSource={dataSource}
         pagination={poginationConfig}
-        onChange={handleTablrChange}
+        onChange={handleTableChange}
       />
     </>
   );

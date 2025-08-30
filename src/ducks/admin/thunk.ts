@@ -1,4 +1,9 @@
-import { MetaResponseUsers, User, UserRequest } from "@/types/types";
+import {
+  MetaResponseUsers,
+  User,
+  UserRequest,
+  UserRolesRequest,
+} from "@/types/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiAuth } from "@/api/axiosInstance";
 import axios, { AxiosRequestConfig } from "axios";
@@ -6,6 +11,10 @@ import { saveUserFiltersQueryParams } from "./slice";
 
 type UpdateUserArgs = {
   userData: UserRequest;
+  userId: number;
+};
+type UpdateUserRolesArgs = {
+  userData: UserRolesRequest;
   userId: number;
 };
 
@@ -118,6 +127,40 @@ export const updateUser = createAsyncThunk(
   async ({ userData, userId }: UpdateUserArgs, { rejectWithValue }) => {
     try {
       await apiAuth.put(`/admin/users/${userId}`, userData);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        switch (error.status) {
+          case 400:
+            return rejectWithValue(
+              "Ошибка, логин или адрес электронной почты уже существует."
+            );
+          case 401:
+            return rejectWithValue(
+              "Несанкционированный доступ. Токен-носитель отсутствует или недействителен."
+            );
+          case 403:
+            return rejectWithValue("Недостаточно прав.");
+          case 404:
+            return rejectWithValue("Пользователь не найден.");
+          case 500:
+            return rejectWithValue("Внутренняя ошибка сервера.");
+          default:
+            return rejectWithValue("Неизвестная ошибка");
+        }
+      } else {
+        return rejectWithValue("Ошибка сети или необработанная ошибка");
+      }
+    }
+  }
+);
+
+export const updateRolesUser = createAsyncThunk(
+  "/admin/users/updateRolesUser",
+  async ({ userData, userId }: UpdateUserRolesArgs, { rejectWithValue }) => {
+    console.log("userData", userData);
+
+    try {
+      await apiAuth.post(`/admin/users/${userId}/rights`, userData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         switch (error.status) {
