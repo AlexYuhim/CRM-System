@@ -24,7 +24,6 @@ export const getAllUsers = createAsyncThunk(
     try {
       const response = await apiAuth.get("admin/users", userFiltersaRespons);
       const data: MetaResponseUsers<User> = response.data;
-      console.log("data THUNK", data);
 
       if (data.meta.totalAmount === 0) {
         thunkAPI.dispatch(saveUserFiltersQueryParams({}));
@@ -39,53 +38,117 @@ export const getAllUsers = createAsyncThunk(
       );
       return data;
     } catch (error) {
-      console.log("Ошибка запроса данных пользователя", error);
-      throw error;
+      if (axios.isAxiosError(error)) {
+        switch (error.status) {
+          case 401:
+            return thunkAPI.rejectWithValue(
+              "Несанкционированный доступ. Токен-носитель отсутствует или недействителен."
+            );
+          case 403:
+            return thunkAPI.rejectWithValue("Недостаточно прав.");
+          case 500:
+            return thunkAPI.rejectWithValue("Внутренняя ошибка сервера.");
+          default:
+            return thunkAPI.rejectWithValue("Неизвестная ошибка");
+        }
+      } else {
+        return thunkAPI.rejectWithValue(
+          "Ошибка сети или необработанная ошибка"
+        );
+      }
     }
   }
 );
 
-export const blocedkUser = createAsyncThunk(
-  `/admin/users/id/block`,
-  async (id: number) => {
+export const blockedUser = createAsyncThunk(
+  `/admin/users/block`,
+  async (id: number, { rejectWithValue }) => {
     try {
       const response = await apiAuth.post(`/admin/users/${id}/block`);
       const data: User = response.data;
 
       return data;
     } catch (error) {
-      console.log("Ошибка блокировки пользователя", error);
-      throw error;
+      if (axios.isAxiosError(error)) {
+        switch (error.status) {
+          case 400:
+            return rejectWithValue(
+              "Неверный или отсутствующий идентификатор пользователя."
+            );
+          case 404:
+            return rejectWithValue("Пользователь не найден.");
+          case 500:
+            return rejectWithValue("Внутренняя ошибка сервера.");
+          default:
+            return rejectWithValue("Неизвестная ошибка");
+        }
+      } else {
+        return rejectWithValue("Ошибка сети или необработанная ошибка");
+      }
     }
   }
 );
 
-export const unBlocedkUser = createAsyncThunk(
-  `/admin/users/id/block`,
-  async (id: number) => {
+export const unBlockedUser = createAsyncThunk(
+  `/admin/users/unblock`,
+  async (id: number, { rejectWithValue }) => {
     try {
       const response = await apiAuth.post(`/admin/users/${id}/unblock`);
       const data: User = response.data;
 
       return data;
     } catch (error) {
-      console.log("Ошибка  разблокировки пользователя", error);
-      throw error;
+      if (axios.isAxiosError(error)) {
+        switch (error.status) {
+          case 400:
+            return rejectWithValue(
+              "Неверный или отсутствующий идентификатор пользователя."
+            );
+          case 404:
+            return rejectWithValue("Пользователь не найден.");
+          case 500:
+            return rejectWithValue("Внутренняя ошибка сервера.");
+          default:
+            return rejectWithValue("Неизвестная ошибка");
+        }
+      } else {
+        return rejectWithValue("Ошибка сети или необработанная ошибка");
+      }
     }
   }
 );
 
 export const getUserPages = createAsyncThunk(
   `/admin/users/{id}`,
-  async (id: number) => {
+  async (id: number, { rejectWithValue }) => {
     try {
       const response = await apiAuth.get(`/admin/users/${id}`);
       const data: User = response.data;
 
       return data;
     } catch (error) {
-      console.log("Ошибка  разблокировки пользователя", error);
-      throw error;
+      if (axios.isAxiosError(error)) {
+        switch (error.status) {
+          case 400:
+            return rejectWithValue(
+              "Неверный или отсутствующий идентификатор пользователя."
+            );
+          case 401:
+            return rejectWithValue(
+              "Несанкционированный доступ. Токен-носитель отсутствует или недействителен."
+            );
+          case 403:
+            return rejectWithValue("Недостаточно прав.");
+          case 404:
+            return rejectWithValue("Пользователь не найден.");
+          case 500:
+            return rejectWithValue("Внутренняя ошибка сервера.");
+          default:
+            return rejectWithValue("Неизвестная ошибка");
+        }
+      } else {
+        return rejectWithValue("Ошибка сети или необработанная ошибка");
+      }
     }
   }
 );
@@ -108,7 +171,7 @@ export const deleteUser = createAsyncThunk(
             );
           case 403:
             return rejectWithValue("Недостаточно прав.");
-          case 403:
+          case 404:
             return rejectWithValue("Пользователь не найден.");
           case 500:
             return rejectWithValue("Внутренняя ошибка сервера.");
@@ -165,15 +228,7 @@ export const updateRolesUser = createAsyncThunk(
       if (axios.isAxiosError(error)) {
         switch (error.status) {
           case 400:
-            return rejectWithValue(
-              "Ошибка, логин или адрес электронной почты уже существует."
-            );
-          case 401:
-            return rejectWithValue(
-              "Несанкционированный доступ. Токен-носитель отсутствует или недействителен."
-            );
-          case 403:
-            return rejectWithValue("Недостаточно прав.");
+            return rejectWithValue("Такого поля нет.");
           case 404:
             return rejectWithValue("Пользователь не найден.");
           case 500:

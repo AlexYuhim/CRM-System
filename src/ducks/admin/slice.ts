@@ -57,7 +57,7 @@ export const adminSlice = createSlice({
         state.userFilters.totalAmount = action.payload.meta.totalAmount;
       })
       .addCase(getAllUsers.rejected, (state, action) => {
-        state.error = (action.payload as string) || "Ошибка загрузки";
+        state.error = action.payload as string;
       });
 
     builder.addMatcher(getUserPages.fulfilled.match, (state, action) => {
@@ -65,11 +65,6 @@ export const adminSlice = createSlice({
         state.user = action.payload;
       }
     });
-    // builder.addMatcher(updateUser.rejected.match, (state, action) => {
-    //   if (action.payload) {
-    //     state.error = action.payload as string;
-    //   }
-    // });
   },
 });
 

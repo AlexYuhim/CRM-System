@@ -18,7 +18,6 @@ export function UserList() {
     navigate(-1);
   };
   const userPages = useAppSelector((state) => state.admin.user);
-  console.log("userPages", userPages);
 
   useEffect(() => {
     dispatch(getUserPages(userId));
@@ -62,8 +61,7 @@ export function UserList() {
       </Space>
       <br />
       <br />
-      <div>id пользвателя {`${id}`}</div>
-      получено с бека :<div>username пользвателя : {userPages.username}</div>
+      <div>username пользвателя : {userPages.username}</div>
       <div>email пользвателя : {userPages.email}</div>
       <div>phoneNumber пользвателя : {userPages.phoneNumber}</div>
       <button

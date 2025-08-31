@@ -1,32 +1,44 @@
 import { getAllUsers } from "@/ducks/admin";
 import { useAppDispatch } from "@/ducks/hooks";
-import { UserFilters } from "@/types/types";
-import { MenuProps } from "antd";
-import { useEffect, useState } from "react";
+import { Input, message } from "antd";
+import { useState } from "react";
+import { SearchOutlined } from "@ant-design/icons";
 
-const itemsMenuSort: MenuProps["items"] = [
-  { key: "ASC", label: "По возрастанию" },
-  { key: "DESC", label: "По убыванию" },
-  { key: "none", label: "Сбросить сортировку" },
-];
-
-interface SearchUserProp {
-  userFilters: UserFilters;
-}
-
-export const SearchUser: React.FC<SearchUserProp> = ({ userFilters }) => {
+const SearchUser = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useAppDispatch();
-
   const [searchValue, setSearchValue] = useState("");
-  useEffect(() => {
+
+  const handleSearch = (): void => {
+    if (!searchValue.trim()) {
+      messageApi.open({
+        type: "warning",
+        content: "введите текст для поиска",
+      });
+
+      return;
+    }
     dispatch(
       getAllUsers({
         params: {
-          ...userFilters,
+          search: searchValue,
         },
       })
     );
-  }, [dispatch]);
+  };
 
-  return null;
+  return (
+    <>
+      {contextHolder}
+      <Input
+        value={searchValue}
+        onChange={(event) => setSearchValue(event.target.value)}
+        style={{ width: 300 }}
+        placeholder="Поиск по имени или email"
+        prefix={<SearchOutlined />}
+        onPressEnter={handleSearch}
+      />
+    </>
+  );
 };
+export default SearchUser;
