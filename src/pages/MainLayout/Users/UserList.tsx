@@ -18,31 +18,48 @@ export function UserList() {
     navigate(-1);
   };
   const userPages = useAppSelector((state) => state.admin.user);
+  const [form] = Form.useForm<UserRequest>();
 
   useEffect(() => {
     dispatch(getUserPages(userId));
-  }, [dispatch]);
+  }, [dispatch, userId]);
+
+  useEffect(() => {
+    if (userPages) {
+      form.setFieldsValue({
+        username: userPages.username,
+        email: userPages.email,
+        phoneNumber: userPages.phoneNumber,
+      });
+    }
+  }, [userPages, form]);
 
   const [showEditFormUser, setShowEditFormUser] = useState<boolean>(false);
+  const [editFields, setEditFields] = useState<UserRequest>({});
   const [messageApi, contextHolder] = message.useMessage();
   const handleClickBtnEditForm = (event: boolean) => {
     setShowEditFormUser(event);
   };
-  const [form] = Form.useForm<UserRequest>();
 
-  async function submmitEditUserForm(dataUserRequset: UserRequest) {
+  async function editUser() {
+    if (!form.isFieldsTouched()) {
+      messageApi.open({
+        type: "warning",
+        content: "внесите изминения",
+      });
+      return;
+    }
     try {
-      await dispatch(
-        updateUser({ userData: dataUserRequset, userId })
-      ).unwrap();
+      await dispatch(updateUser({ userData: editFields, userId })).unwrap();
 
       handleClickBtnEditForm(false);
 
+      dispatch(getUserPages(userId));
       messageApi.open({
         type: "success",
         content: "Профиль пользователя успешно обновлен.",
       });
-      dispatch(getUserPages(userId));
+      setEditFields({});
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -50,6 +67,12 @@ export function UserList() {
       });
     }
   }
+  const onValuesChange = (changedValues: Partial<UserRequest>) => {
+    console.log("changedValues", changedValues);
+
+    setEditFields((prev) => ({ ...prev, ...changedValues }));
+  };
+  console.log("editFields", editFields);
 
   return (
     <>
@@ -76,11 +99,11 @@ export function UserList() {
           style={{ rowGap: "16px" }}
           layout="vertical"
           name="register"
-          onFinish={submmitEditUserForm}
+          onFinish={editUser}
           scrollToFirstError
+          onValuesChange={onValuesChange}
         >
           <Form.Item
-            initialValue={userPages.username}
             name="username"
             label="имя пользоватиля"
             rules={[
@@ -98,7 +121,6 @@ export function UserList() {
           </Form.Item>
 
           <Form.Item
-            initialValue={userPages.email}
             name="email"
             label="Почта"
             rules={[
@@ -115,15 +137,14 @@ export function UserList() {
           </Form.Item>
 
           <Form.Item
-            initialValue={userPages.phoneNumber}
             label="номер телефона"
             name="phoneNumber"
             rules={[{ validator: phoneValidator }]}
           >
-            <Input placeholder="+7 (999) 123-45-67" />
+            <Input />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button disabled={false} type="primary" htmlType="submit">
               edit
             </Button>
           </Form.Item>
