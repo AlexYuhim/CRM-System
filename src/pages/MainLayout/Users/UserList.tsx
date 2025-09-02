@@ -68,11 +68,8 @@ export function UserList() {
     }
   }
   const onValuesChange = (changedValues: Partial<UserRequest>) => {
-    console.log("changedValues", changedValues);
-
     setEditFields((prev) => ({ ...prev, ...changedValues }));
   };
-  console.log("editFields", editFields);
 
   return (
     <>
