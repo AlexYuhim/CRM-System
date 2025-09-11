@@ -78,7 +78,7 @@ export function Users() {
         params: {
           ...userFilters,
           limit: paginationObj.pageSize ?? 20,
-          offset: (paginationObj.current ?? 1) - 1,
+          page: (paginationObj.current ?? 1) - 1,
         },
       })
     );

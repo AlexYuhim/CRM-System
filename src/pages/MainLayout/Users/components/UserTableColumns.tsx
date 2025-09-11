@@ -187,19 +187,18 @@ export const UserTableColumns = () => {
       title: "Роли",
       dataIndex: "roles",
       key: "roles",
-      width: 500,
+
       render: (roles: Roles[], record: User) => (
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            flexWrap: "wrap",
             gap: "8px",
           }}
         >
           <Space>
-            {roles.map((role) => (
+            {roles?.map((role) => (
               <Tag color={roleColors[role] || "default"} key={role}>
                 {role}
               </Tag>

@@ -1,8 +1,9 @@
 import { FC } from "react";
-import { addTodo } from "@/api/axiosInstance";
+
 import { ITodoList } from "@/types/types";
 import { VALIDATE_CHAR_TODO } from "@/constants/constants";
 import { Button, Form, Input, Row, Col } from "antd";
+import { addTodo } from "@/api/apiTodo";
 
 const { MIN, MAX } = VALIDATE_CHAR_TODO;
 
@@ -10,7 +11,7 @@ interface FormValueProp {
   inputAddTask: string;
 }
 
-export const AddTodo: FC<ITodoList> = ({ getData }) => {
+export const AddTasck: FC<ITodoList> = ({ getData }) => {
   const [form] = Form.useForm();
 
   //добавляю задачу

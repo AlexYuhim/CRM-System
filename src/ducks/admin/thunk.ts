@@ -1,6 +1,7 @@
 import {
   MetaResponseUsers,
   User,
+  UserFilters,
   UserRequest,
   UserRolesRequest,
 } from "@/types/types";
@@ -8,6 +9,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiAuth } from "@/api/axiosInstance";
 import axios, { AxiosRequestConfig } from "axios";
 import { saveUserFiltersQueryParams } from "./slice";
+import { AppThunkConfig } from "../store";
 
 type UpdateUserArgs = {
   userData: UserRequest;
@@ -18,49 +20,46 @@ type UpdateUserRolesArgs = {
   userId: number;
 };
 
-export const getAllUsers = createAsyncThunk(
-  "admin/users",
-  async (userFiltersaRespons: AxiosRequestConfig, thunkAPI) => {
-    try {
-      const response = await apiAuth.get("admin/users", userFiltersaRespons);
-      const data: MetaResponseUsers<User> = response.data;
+export const getAllUsers = createAsyncThunk<
+  MetaResponseUsers<User>,
+  AxiosRequestConfig,
+  AppThunkConfig
+>("admin/users", async (requestConfig: AxiosRequestConfig, thunkAPI) => {
+  try {
+    const response = await apiAuth.get("admin/users", requestConfig);
+    const data: MetaResponseUsers<User> = response.data;
 
-      if (data.meta.totalAmount === 0) {
-        thunkAPI.dispatch(saveUserFiltersQueryParams({}));
-      }
-      if (data.data === null) {
-        return thunkAPI.rejectWithValue(
-          `Имя ${userFiltersaRespons.params.search} не найдено в базе`
-        );
-      }
-      thunkAPI.dispatch(
-        saveUserFiltersQueryParams(userFiltersaRespons.params || {})
+    if (data.meta.totalAmount === 0) {
+      thunkAPI.dispatch(saveUserFiltersQueryParams({}));
+    }
+    if (data.data === null) {
+      return thunkAPI.rejectWithValue(
+        `Имя ${requestConfig.params?.search || "не указанно"} не найдено в базе`
       );
-      return data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        switch (error.status) {
-          case 401:
-            return thunkAPI.rejectWithValue(
-              "Несанкционированный доступ. Токен-носитель отсутствует или недействителен."
-            );
-          case 403:
-            return thunkAPI.rejectWithValue("Недостаточно прав.");
-          case 500:
-            return thunkAPI.rejectWithValue("Внутренняя ошибка сервера.");
-          default:
-            return thunkAPI.rejectWithValue("Неизвестная ошибка");
-        }
-      } else {
-        return thunkAPI.rejectWithValue(
-          "Ошибка сети или необработанная ошибка"
-        );
+    }
+    thunkAPI.dispatch(saveUserFiltersQueryParams(requestConfig.params || {}));
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return thunkAPI.rejectWithValue(
+            "Несанкционированный доступ. Токен-носитель отсутствует или недействителен."
+          );
+        case 403:
+          return thunkAPI.rejectWithValue("Недостаточно прав.");
+        case 500:
+          return thunkAPI.rejectWithValue("Внутренняя ошибка сервера.");
+        default:
+          return thunkAPI.rejectWithValue("Неизвестная ошибка");
       }
+    } else {
+      return thunkAPI.rejectWithValue("Ошибка сети или необработанная ошибка");
     }
   }
-);
+});
 
-export const blockedUser = createAsyncThunk(
+export const blockedUser = createAsyncThunk<User, number, AppThunkConfig>(
   `/admin/users/block`,
   async (id: number, { rejectWithValue }) => {
     try {
@@ -89,7 +88,7 @@ export const blockedUser = createAsyncThunk(
   }
 );
 
-export const unBlockedUser = createAsyncThunk(
+export const unBlockedUser = createAsyncThunk<User, number, AppThunkConfig>(
   `/admin/users/unblock`,
   async (id: number, { rejectWithValue }) => {
     try {
@@ -118,7 +117,7 @@ export const unBlockedUser = createAsyncThunk(
   }
 );
 
-export const getUserPages = createAsyncThunk(
+export const getUserPages = createAsyncThunk<User, number, AppThunkConfig>(
   `/admin/users/{id}`,
   async (id: number, { rejectWithValue }) => {
     try {
@@ -153,7 +152,7 @@ export const getUserPages = createAsyncThunk(
   }
 );
 
-export const deleteUser = createAsyncThunk(
+export const deleteUser = createAsyncThunk<void, number, AppThunkConfig>(
   `/admin/users/{id}`,
   async (id: number, { rejectWithValue }) => {
     try {
@@ -185,7 +184,11 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
-export const updateUser = createAsyncThunk(
+export const updateUser = createAsyncThunk<
+  void,
+  UpdateUserArgs,
+  AppThunkConfig
+>(
   "/admin/users/updateUser",
   async ({ userData, userId }: UpdateUserArgs, { rejectWithValue }) => {
     try {
@@ -217,11 +220,13 @@ export const updateUser = createAsyncThunk(
   }
 );
 
-export const updateRolesUser = createAsyncThunk(
+export const updateRolesUser = createAsyncThunk<
+  void,
+  UpdateUserRolesArgs,
+  AppThunkConfig
+>(
   "/admin/users/updateRolesUser",
   async ({ userData, userId }: UpdateUserRolesArgs, { rejectWithValue }) => {
-    console.log("userData", userData);
-
     try {
       await apiAuth.post(`/admin/users/${userId}/rights`, userData);
     } catch (error) {

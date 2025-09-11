@@ -2,7 +2,7 @@ import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
 import { signIn } from "@/ducks/auth";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { AuthData } from "@/types/types";
-import { Button, Form, Input, message, Modal } from "antd";
+import { App, Button, Form, Input, notification } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import style from "./AuthLayout.module.css";
@@ -15,10 +15,9 @@ export const SignInForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { authenticated, error } = useAppSelector((store) => store.auth);
-
-  const [isModalErrorOpen, setIsModalErrorOpen] = useState(false);
-
+  const { authenticated } = useAppSelector((store) => store.auth);
+  const [message, contextHolder] = notification.useNotification();
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     if (authenticated) {
       const from = location.state?.from?.pathname || "/todos";
@@ -26,20 +25,25 @@ export const SignInForm = () => {
     }
   }, [authenticated, navigate, location]);
 
-  async function submmitSignInForm(authData: AuthData) {
+  const submmitSignInForm = async (authData: AuthData) => {
+    setLoading(true);
     try {
       await dispatch(signIn(authData)).unwrap();
       form.resetFields();
     } catch (error) {
-      setIsModalErrorOpen(true);
+      message.error({
+        message: "ошибка входа",
+        description: "Неверный логин или пароль!",
+        placement: "top",
+      });
+    } finally {
+      setLoading(false);
     }
-  }
-
-  const handleOkErr = () => {
-    setIsModalErrorOpen(false);
   };
+
   return (
     <>
+      {contextHolder}
       <div className={style.titleText}>
         <div>
           <h3>Войдите в свою учетную запись</h3>
@@ -95,24 +99,11 @@ export const SignInForm = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             Войти
           </Button>
         </Form.Item>
       </Form>
-
-      <Modal
-        title="Ошибка регистрация!"
-        open={isModalErrorOpen}
-        onOk={handleOkErr}
-        footer={[
-          <Button key="login" type="primary" onClick={handleOkErr}>
-            OK
-          </Button>,
-        ]}
-      >
-        <p>{error}</p>
-      </Modal>
 
       <div className={style.linkSwitchForm}>
         <Link to="/auth/register">Регистрация</Link>

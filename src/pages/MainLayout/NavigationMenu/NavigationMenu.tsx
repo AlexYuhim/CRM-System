@@ -1,4 +1,4 @@
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Menu } from "antd";
 import type { MenuProps } from "antd";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
@@ -21,26 +21,25 @@ import { logOut } from "@/ducks/auth";
 export function NavigationMenu() {
   const dispatch = useAppDispatch();
   const roles = useAppSelector((state) => state.profile.roles);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+
   useEffect(() => {
     dispatch(getProfile());
   }, [dispatch]);
 
-  const hendleLogout = () => {
+  const handleLogout = () => {
     dispatch(logOut());
-    <Navigate to={"/"} />;
+    navigate("/auth/login/");
   };
-
-  const [collapsed, setCollapsed] = useState(false);
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const isAdmin =
-    roles.includes(Roles.ADMIN) || roles.includes(Roles.MODERATOR);
+  const admineRoles = [Roles.ADMIN, Roles.MODERATOR];
+  const isAdmin = roles.some((role) => admineRoles.includes(role));
 
   type MenuItem = Required<MenuProps>["items"][number];
 
@@ -78,7 +77,7 @@ export function NavigationMenu() {
     {
       key: "logout",
       icon: <LogoutOutlined />,
-      style: { marginTop: "auto" }, // Прижимаем к низу
+      style: { marginTop: "auto" },
       label: "Выход",
     },
   ];
@@ -90,7 +89,13 @@ export function NavigationMenu() {
       icon: <TeamOutlined />,
     });
   }
-
+  const handlerLogout = (btn: { key: string }) => {
+    if (btn.key === "logout") {
+      handleLogout();
+    } else {
+      navigate(btn.key);
+    }
+  };
   return (
     <div style={{ width: "100%", maxWidth: 256 }}>
       <Button
@@ -107,13 +112,7 @@ export function NavigationMenu() {
         inlineCollapsed={collapsed}
         items={items}
         selectedKeys={[location.pathname]}
-        onClick={(e) => {
-          if (e.key === "logout") {
-            hendleLogout();
-          } else {
-            navigate(e.key);
-          }
-        }}
+        onClick={handlerLogout}
       />
     </div>
   );

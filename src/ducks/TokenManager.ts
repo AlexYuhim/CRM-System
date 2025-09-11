@@ -1,5 +1,5 @@
 class TokenManager {
-  constructor(private accessToken: string | null) {}
+  private accessToken: string | null = null;
   setAccessToken(token: string): void {
     this.accessToken = token;
   }
@@ -10,4 +10,4 @@ class TokenManager {
     this.accessToken = null;
   }
 }
-export const tokenManager = new TokenManager(null);
+export const tokenManager = new TokenManager();

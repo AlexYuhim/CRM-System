@@ -1,6 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
 import { getProfile } from "@/ducks/user";
 import { useEffect } from "react";
+import { Typography } from "antd";
+const { Title, Text, Paragraph } = Typography;
 
 export function Profile() {
   const dispatch = useAppDispatch();
@@ -11,11 +13,20 @@ export function Profile() {
   }, [dispatch]);
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div>Имя пользователя : {profile.username}</div>
-      <div>email : {profile.email}</div>
-      <div>телефон : {profile.phoneNumber}</div>
-      <div>Роль : {profile.roles}</div>
-    </div>
+    <Typography>
+      <Title>{profile.username}</Title>
+      <Paragraph>
+        <Text strong>Email: </Text>
+        <Text>{profile.email}</Text>
+      </Paragraph>
+      <Paragraph>
+        <Text strong>Телефон: </Text>
+        <Text>{profile.phoneNumber}</Text>
+      </Paragraph>
+      <Paragraph>
+        <Text strong>Rokm: </Text>
+        <Text>{profile.roles}</Text>
+      </Paragraph>
+    </Typography>
   );
 }

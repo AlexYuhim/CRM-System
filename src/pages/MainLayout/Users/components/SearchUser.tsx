@@ -3,29 +3,26 @@ import { useAppDispatch } from "@/ducks/hooks";
 import { Input, message } from "antd";
 import { useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
+import useDebounce from "@/hooks/useDebounce";
 
 const SearchUser = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useAppDispatch();
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState<string>("");
 
-  const handleSearch = (): void => {
-    if (!searchValue.trim()) {
-      messageApi.open({
-        type: "warning",
-        content: "введите текст для поиска",
-      });
-
-      return;
-    }
-    dispatch(
-      getAllUsers({
-        params: {
-          search: searchValue,
-        },
-      })
-    );
-  };
+  useDebounce(
+    () => {
+      dispatch(
+        getAllUsers({
+          params: {
+            search: searchValue,
+          },
+        })
+      );
+    },
+    500,
+    [searchValue]
+  );
 
   return (
     <>
@@ -36,7 +33,6 @@ const SearchUser = () => {
         style={{ width: 300 }}
         placeholder="Поиск по имени или email"
         prefix={<SearchOutlined />}
-        onPressEnter={handleSearch}
       />
     </>
   );

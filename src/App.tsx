@@ -7,21 +7,12 @@ import { ProtectedRoutes } from "./ProtectedRoutes";
 import { NoFound } from "./pages/MainLayout/NoFound/NoFound";
 import { TodoBoardPages } from "./pages/MainLayout/TodoBoardPages/TodoBoardPages";
 import { Profile } from "./pages/MainLayout/Profile/Profile";
-import { useEffect } from "react";
-import { refreshToken } from "./ducks/auth";
-import { useAppDispatch } from "./ducks/hooks";
 import { SignInForm } from "./pages/AuthLayout/SignInForm";
 import { SignUpForm } from "./pages/AuthLayout/SignUpForm";
 import { Users } from "./pages/MainLayout/Users/Users";
 import { UserList } from "./pages/MainLayout/Users/UserList";
 
 function App() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(refreshToken()).unwrap();
-  }, [dispatch]);
-
   return (
     <div className="App">
       <Routes>

@@ -1,11 +1,12 @@
 import { getUserPages, updateUser } from "@/ducks/admin";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
-import { Button, Form, Input, message, Modal, Space } from "antd";
+import { Button, Form, Input, message, Space } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
 import { phoneValidator } from "@/utils/phoneValidator";
 import { UserRequest } from "@/types/types";
+import { getFieldData } from "@/utils/getFieldDeta";
 const { MIN_CHAR_NAME_USER, MAX_CHAR_NAME_USER } =
   VALIDATE_CHAR_FORM_REGISTRATION;
 
@@ -13,7 +14,8 @@ export function UserList() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const userId = id ? parseInt(id, 10) : NaN;
+  const userId = Number(id);
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -35,13 +37,16 @@ export function UserList() {
   }, [userPages, form]);
 
   const [showEditFormUser, setShowEditFormUser] = useState<boolean>(false);
-  const [editFields, setEditFields] = useState<UserRequest>({});
+
   const [messageApi, contextHolder] = message.useMessage();
-  const handleClickBtnEditForm = (event: boolean) => {
-    setShowEditFormUser(event);
+
+  const handleClickBtnEditForm = (isEditing: boolean) => {
+    setShowEditFormUser(isEditing);
   };
 
-  async function editUser() {
+  const editUser = async (fieldForm: UserRequest) => {
+    const editFields = getFieldData(userPages, fieldForm);
+    console.log("editFields", editFields);
     if (!form.isFieldsTouched()) {
       messageApi.open({
         type: "warning",
@@ -59,16 +64,12 @@ export function UserList() {
         type: "success",
         content: "Профиль пользователя успешно обновлен.",
       });
-      setEditFields({});
     } catch (error) {
       messageApi.open({
         type: "error",
         content: `${error}`,
       });
     }
-  }
-  const onValuesChange = (changedValues: Partial<UserRequest>) => {
-    setEditFields((prev) => ({ ...prev, ...changedValues }));
   };
 
   return (
@@ -98,7 +99,7 @@ export function UserList() {
           name="register"
           onFinish={editUser}
           scrollToFirstError
-          onValuesChange={onValuesChange}
+          // onValuesChange={onValuesChange}
         >
           <Form.Item
             name="username"
@@ -141,8 +142,8 @@ export function UserList() {
             <Input />
           </Form.Item>
           <Form.Item>
-            <Button disabled={false} type="primary" htmlType="submit">
-              edit
+            <Button type="primary" htmlType="submit">
+              отправить
             </Button>
           </Form.Item>
         </Form>

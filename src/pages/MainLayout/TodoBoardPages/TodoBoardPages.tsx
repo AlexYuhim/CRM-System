@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import style from "./TodoBoardPages.module.css";
-import { metaResponse } from "@/api/axiosInstance";
-import { AddTodo } from "@/components/AddTodo/AddTodo";
+import { metaResponse } from "@/api/apiTodo";
+import { AddTasck } from "@/components/AddTask/AddTask";
 import { ListOfTasks } from "@/components/ListOfTasks/ListOfTasks";
 import { TodoList } from "@/components/TodoList/TodoList";
 import { StatusWork, TodoInfo, ITodo } from "@/types/types";
@@ -49,7 +49,7 @@ export function TodoBoardPages() {
         setStatusTodos={setStatusTodos}
       />
       <div className={style.group_input_ouyput}>
-        <AddTodo getData={getData} />
+        <AddTasck getData={getData} />
         {isLoading ? (
           "Loading..."
         ) : (

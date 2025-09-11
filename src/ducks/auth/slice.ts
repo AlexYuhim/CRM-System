@@ -3,8 +3,7 @@ import { logOut, refreshToken, signIn, signUp } from "./thunk";
 import { tokenManager } from "../TokenManager";
 import { UserRegistration } from "@/types/types";
 
-interface InitialStateAyth {
-  accessToken?: string;
+interface Auth {
   refreshToken?: string;
   authenticated?: boolean;
   isLoading?: boolean;
@@ -12,8 +11,7 @@ interface InitialStateAyth {
   formData?: UserRegistration;
 }
 
-const initialState: InitialStateAyth = {
-  accessToken: tokenManager.getAccessToken() || undefined,
+const initialState: Auth = {
   refreshToken: localStorage.getItem("refresh") || undefined,
   authenticated: false,
   isLoading: false,
