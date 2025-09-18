@@ -1,27 +1,35 @@
 import { useAppSelector } from "@/ducks/hooks";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Result } from "antd";
 
 export const NoFound = () => {
   const { authenticated } = useAppSelector((store) => store.auth);
-  const location = useLocation();
 
   if (!authenticated) {
     return (
-      <>
-        <h2>404 попробуйте войти</h2>
-        <div>
-          <Link to="/auth/login"> Go Login</Link>
-        </div>
-      </>
+      <Result
+        status="404"
+        title="404"
+        subTitle="что то пошло не так"
+        extra={
+          <Link to="/auth/login" type="primary">
+            LogIn
+          </Link>
+        }
+      />
     );
   } else {
     return (
-      <>
-        <h2>404 такой страници нет </h2>
-        <div>
-          <Link to="/todos"> Go Todos</Link>
-        </div>
-      </>
+      <Result
+        status="404"
+        title="404"
+        subTitle="404 такой страници нет"
+        extra={
+          <Link to="/todos" type="primary">
+            Home
+          </Link>
+        }
+      />
     );
   }
 };

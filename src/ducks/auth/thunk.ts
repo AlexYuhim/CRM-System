@@ -3,44 +3,46 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { tokenManager } from "../TokenManager";
 import { apiAuth } from "@/api/axiosInstance";
 import axios from "axios";
+import { AppThunkConfig } from "../store";
 
-export const signUp = createAsyncThunk(
-  "auth/signUp",
-  async (dataRequest: UserRegistration, { rejectWithValue }) => {
-    try {
-      const response = await apiAuth.post("/auth/signup", dataRequest);
+export const signUp = createAsyncThunk<
+  UserRegistration,
+  UserRegistration,
+  AppThunkConfig
+>("auth/signUp", async (dataRequest: UserRegistration, { rejectWithValue }) => {
+  try {
+    const response = await apiAuth.post("/auth/signup", dataRequest);
 
-      const data: UserRegistration = response.data;
+    const data: UserRegistration = response.data;
 
-      return data;
-    } catch (error) {
-      console.log("error", error);
+    return data;
+  } catch (error) {
+    console.log("error", error);
 
-      if (axios.isAxiosError(error)) {
-        switch (error.status) {
-          case 400:
-            return rejectWithValue(
-              "Ошибка десериализации запроса или неверный ввод"
-            );
-          case 409:
-            return rejectWithValue(
-              "Пользователь с таким логином или почтой  уже существует"
-            );
-          case 500:
-            return rejectWithValue("Внутренняя ошибка сервера.");
-          default:
-            return rejectWithValue("Неизвестная ошибка");
-        }
-      } else {
-        return rejectWithValue("Ошибка сети или необработанная ошибка");
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 400:
+          return rejectWithValue(
+            "Ошибка десериализации запроса или неверный ввод"
+          );
+        case 409:
+          return rejectWithValue(
+            "Пользователь с таким логином или почтой  уже существует"
+          );
+        case 500:
+          return rejectWithValue("Внутренняя ошибка сервера.");
+        default:
+          return rejectWithValue("Неизвестная ошибка");
       }
+    } else {
+      return rejectWithValue("Ошибка сети или необработанная ошибка");
     }
   }
-);
+});
 
-export const signIn = createAsyncThunk(
+export const signIn = createAsyncThunk<Token, AuthData, AppThunkConfig>(
   "auth/signin",
-  async (dataRequest: AuthData, { dispatch, rejectWithValue }) => {
+  async (dataRequest: AuthData, { rejectWithValue }) => {
     try {
       const response = await apiAuth.post("/auth/signin", dataRequest);
 
@@ -68,7 +70,7 @@ export const signIn = createAsyncThunk(
   }
 );
 
-export const refreshToken = createAsyncThunk(
+export const refreshToken = createAsyncThunk<Token, void, AppThunkConfig>(
   "/auth/refresh",
   async (_, { rejectWithValue }) => {
     const refreshToken = localStorage.getItem("refresh");
@@ -99,7 +101,7 @@ export const refreshToken = createAsyncThunk(
   }
 );
 
-export const logOut = createAsyncThunk("user/logout", async () => {
+export const logOut = createAsyncThunk("/user/logout", async () => {
   try {
     await apiAuth.post("/user/logout");
   } catch (error) {

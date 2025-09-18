@@ -1,11 +1,15 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAppSelector } from "./ducks/hooks";
+import { useAppDispatch, useAppSelector } from "./ducks/hooks";
+import { useEffect } from "react";
+import { refreshToken } from "./ducks/auth";
 
-interface IProtectedRoutesProps {
-  isAuth?: boolean;
-}
+export const ProtectedRoutes = () => {
+  const dispatch = useAppDispatch();
 
-export const ProtectedRoutes = ({ isAuth }: IProtectedRoutesProps) => {
+  useEffect(() => {
+    dispatch(refreshToken()).unwrap();
+  }, [dispatch]);
+
   const { authenticated } = useAppSelector((store) => store.auth);
   const location = useLocation();
 

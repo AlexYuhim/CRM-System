@@ -47,14 +47,21 @@ export interface UserRegistration {
 
 type Role = "ADMIN" | "USER" | "MODERATOR";
 
+export enum Roles {
+  ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
+  USER = "USER",
+}
+
 export interface Profile {
   id: number;
   username: string;
   email: string;
   date: string;
   isBlocked: boolean;
-  roles: Role[];
+  roles: Roles[];
   phoneNumber: string;
+  isLoaded?: boolean;
 }
 
 export interface AuthData {
@@ -65,4 +72,43 @@ export interface AuthData {
 export interface Token {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  date: string;
+  isBlocked: boolean | string;
+  roles: Roles[];
+  phoneNumber: string;
+}
+
+export interface UserFilters {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  isBlocked?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export interface MetaResponseUsers<T> {
+  data: T[];
+  meta: {
+    totalAmount: number;
+    sortBy: string;
+    sortOrder: "asc" | "desc";
+  };
+}
+
+export interface UserRequest {
+  id?: number;
+  username?: string;
+  email?: string;
+  phoneNumber?: string;
+}
+
+export interface UserRolesRequest {
+  roles: Roles[];
 }

@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { authReducer } from "./auth";
-import { profileReducer } from "./users";
+import { profileReducer } from "./user";
+import { adminReducer } from "./admin";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   profile: profileReducer,
+  admin: adminReducer,
 });
 
 export const store = configureStore({
@@ -15,3 +17,9 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = typeof store.dispatch;
+export type AppThunkConfig = {
+  state: RootState;
+  dispatch: AppDispatch;
+  rejectValue: string;
+};
