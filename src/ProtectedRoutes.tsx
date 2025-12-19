@@ -1,11 +1,12 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "./ducks/hooks";
+
 import { useEffect } from "react";
-import { refreshToken } from "./ducks/auth";
+import { refreshToken } from "./features/auth/index.ts";
+import { useAppDispatch, useAppSelector } from "./ducks/hooks.ts";
 
 export const ProtectedRoutes = () => {
   const dispatch = useAppDispatch();
-
+  refreshToken;
   useEffect(() => {
     dispatch(refreshToken()).unwrap();
   }, [dispatch]);

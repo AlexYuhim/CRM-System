@@ -4,8 +4,8 @@ import {
   ITodo,
   TodoInfo,
   StatusWork,
-} from "@/types/types";
-import { apiTodo } from "./axiosInstance";
+} from "@/types/types.tsx";
+import { apiTodo } from "./axiosInstance.ts";
 
 export async function metaResponse(
   statusTodos: StatusWork

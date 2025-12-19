@@ -1,7 +1,7 @@
+import { authReducer } from "@/features/auth/model/index.ts";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { authReducer } from "./auth";
-import { profileReducer } from "./user";
-import { adminReducer } from "./admin";
+import { profileReducer } from "./user/index.ts";
+import { adminReducer } from "./admin/index.ts";
 
 const rootReducer = combineReducers({
   auth: authReducer,

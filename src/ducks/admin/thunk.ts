@@ -1,15 +1,15 @@
 import {
   MetaResponseUsers,
   User,
-  UserFilters,
   UserRequest,
   UserRolesRequest,
-} from "@/types/types";
+} from "@/types/types.tsx";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiAuth } from "@/api/axiosInstance";
+
 import axios, { AxiosRequestConfig } from "axios";
-import { saveUserFiltersQueryParams } from "./slice";
-import { AppThunkConfig } from "../store";
+import { AppThunkConfig } from "../store.ts";
+import { apiAuth } from "@/shared/api/axiosInstance.ts";
+import { saveUserFiltersQueryParams } from "./slice.ts";
 
 type UpdateUserArgs = {
   userData: UserRequest;

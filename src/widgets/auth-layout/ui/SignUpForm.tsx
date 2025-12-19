@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants";
+
 import style from "./AuthLayout.module.css";
 
 import { Button, Form, Modal, Input, message } from "antd";
-import { UserRegistration } from "@/types/types";
-import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
-import { signUp } from "@/ducks/auth";
-import type { Rule } from "antd/es/form";
+
 import { Link, useNavigate } from "react-router-dom";
-import { phoneValidator } from "@/utils/phoneValidator";
+import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants.tsx";
+import { useAppDispatch, useAppSelector } from "@/ducks/hooks.ts";
+import { UserRegistration } from "@/types/types.tsx";
+import { signUp } from "@/features/auth/index.ts";
+import { phoneValidator } from "@/utils/phoneValidator.ts";
+
 const {
   MIN_CHAR_LOGIN,
   MAX_CHAR_LOGIN,

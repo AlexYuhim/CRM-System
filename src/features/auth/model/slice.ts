@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { logOut, refreshToken, signIn, signUp } from "./thunk";
-import { tokenManager } from "../TokenManager";
-import { UserRegistration } from "@/types/types";
+import { logOut, refreshToken, signIn, signUp } from "./thunks.ts";
+
+import { UserRegistration } from "@/types/types.ts";
+import { tokenManager } from "@/ducks/TokenManager.ts";
 
 interface Auth {
   refreshToken?: string;
@@ -26,6 +27,7 @@ export const authSlice = createSlice({
   },
   extraReducers(builder) {
     // обработка асинхронщины
+
     builder
       .addCase(signUp.pending, (state) => {
         state.isLoading = true;
@@ -46,6 +48,7 @@ export const authSlice = createSlice({
       })
       .addCase(refreshToken.rejected, (state) => {
         state.authenticated = false;
+
         tokenManager.clear();
         localStorage.setItem("refresh", "undefined");
         state.isLoading = false;

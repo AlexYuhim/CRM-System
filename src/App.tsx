@@ -1,16 +1,17 @@
 import "@/App.css";
 
-import { AuthLayout } from "./pages/AuthLayout/AuthLayout";
-import { MainLayout } from "./pages/MainLayout/MainLayout";
+import { MainLayout } from "./pages/MainLayout/MainLayout.tsx";
 import { Route, Routes } from "react-router-dom";
-import { ProtectedRoutes } from "./ProtectedRoutes";
-import { NoFound } from "./pages/MainLayout/NoFound/NoFound";
-import { TodoBoardPages } from "./pages/MainLayout/TodoBoardPages/TodoBoardPages";
-import { Profile } from "./pages/MainLayout/Profile/Profile";
-import { SignInForm } from "./pages/AuthLayout/SignInForm";
-import { SignUpForm } from "./pages/AuthLayout/SignUpForm";
-import { Users } from "./pages/MainLayout/Users/Users";
-import { UserList } from "./pages/MainLayout/Users/UserList";
+import { ProtectedRoutes } from "./ProtectedRoutes.tsx";
+import { NoFound } from "./pages/MainLayout/NoFound/NoFound.tsx";
+import { TodoBoardPages } from "./pages/MainLayout/TodoBoardPages/TodoBoardPages.tsx";
+import { Profile } from "./pages/MainLayout/Profile/Profile.tsx";
+
+import { Users } from "./pages/MainLayout/Users/Users.tsx";
+import { UserList } from "./pages/MainLayout/Users/UserList.tsx";
+import { AuthLayout } from "./widgets/auth-layout/ui/AuthLayout.tsx";
+import { SignInForm } from "./widgets/auth-layout/ui/SignInForm.tsx";
+import { SignUpForm } from "./widgets/auth-layout/ui/SignUpForm.tsx";
 
 function App() {
   return (

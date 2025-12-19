@@ -1,10 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Menu } from "antd";
 import type { MenuProps } from "antd";
-import { useAppDispatch, useAppSelector } from "@/ducks/hooks";
+import { useAppDispatch, useAppSelector } from "@/ducks/hooks.ts";
 import { useEffect, useState } from "react";
-import { Roles } from "@/types/types";
-import { getProfile } from "@/ducks/user";
 
 import {
   AppstoreOutlined,
@@ -16,7 +14,10 @@ import {
   UnorderedListOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { logOut } from "@/ducks/auth";
+
+import { getProfile } from "@/ducks/user/thunk.ts";
+import { logOut } from "@/features/auth/index.ts";
+import { Roles } from "@/types/types.tsx";
 
 export function NavigationMenu() {
   const dispatch = useAppDispatch();
@@ -39,7 +40,7 @@ export function NavigationMenu() {
   };
 
   const admineRoles = [Roles.ADMIN, Roles.MODERATOR];
-  const isAdmin = roles.some((role) => admineRoles.includes(role));
+  const isAdmin = roles.some((role: Roles) => admineRoles.includes(role));
 
   type MenuItem = Required<MenuProps>["items"][number];
 
