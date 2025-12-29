@@ -1,11 +1,12 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import "./index.css";
-import App from "./App.tsx";
+import "@app/index.css";
+
 import "antd/dist/reset.css";
-import "./styles/antd-custom.css";
+import "@shared/styles/antd-custom.css";
 import { Provider } from "react-redux";
 import { store } from "./ducks/store.ts";
+import { App } from "@app/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>

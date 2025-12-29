@@ -2,8 +2,8 @@ import { App, Button, Form, Input, notification } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import style from "./AuthLayout.module.css";
-import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants.tsx";
-import { AuthData } from "@/types/types.tsx";
+import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/shared/constants/constants.tsx";
+import { AuthData } from "@/shared/types/types.tsx";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks.ts";
 import { signIn } from "@/features/auth/index.ts";
 

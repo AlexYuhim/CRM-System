@@ -1,9 +1,10 @@
 import style from "./Todo.module.css";
 import React, { FC, useState } from "react";
-import { deleteTodo, updateTodo } from "@/api/apiTodo";
-import { ITodo } from "@/types/types";
+
 import { Button, Col, Form, Input, Row } from "antd";
-import { VALIDATE_CHAR_TODO } from "@/constants/constants";
+import { VALIDATE_CHAR_TODO } from "@/shared/constants/constants.tsx";
+import { ITodo } from "@/shared/types/types.tsx";
+import { deleteTodo, updateTodo } from "@/api/apiTodo.tsx";
 
 const { MIN, MAX } = VALIDATE_CHAR_TODO;
 

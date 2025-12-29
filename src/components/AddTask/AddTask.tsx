@@ -1,9 +1,9 @@
 import { FC } from "react";
 
-import { ITodoList } from "@/types/types";
-import { VALIDATE_CHAR_TODO } from "@/constants/constants";
 import { Button, Form, Input, Row, Col } from "antd";
-import { addTodo } from "@/api/apiTodo";
+import { VALIDATE_CHAR_TODO } from "@/shared/constants/constants.tsx";
+import { ITodoList } from "@/shared/types/types.tsx";
+import { addTodo } from "@/api/apiTodo.tsx";
 
 const { MIN, MAX } = VALIDATE_CHAR_TODO;
 

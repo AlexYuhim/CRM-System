@@ -1,5 +1,5 @@
-import { apiAuth } from "@/shared/api/axiosInstance.ts";
-import { Profile } from "@/types/types.tsx";
+import { apiAuth } from "@/shared/api/http-auth/axiosInstance.ts";
+import { Profile } from "@/shared/types/types.tsx";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getProfile = createAsyncThunk<Profile, void>(

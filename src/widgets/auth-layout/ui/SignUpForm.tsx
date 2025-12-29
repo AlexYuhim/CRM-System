@@ -5,11 +5,11 @@ import style from "./AuthLayout.module.css";
 import { Button, Form, Modal, Input, message } from "antd";
 
 import { Link, useNavigate } from "react-router-dom";
-import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/constants/constants.tsx";
+import { VALIDATE_CHAR_FORM_REGISTRATION } from "@/shared/constants/constants.tsx";
 import { useAppDispatch, useAppSelector } from "@/ducks/hooks.ts";
-import { UserRegistration } from "@/types/types.tsx";
+import { UserRegistration } from "@/shared/types/types.tsx";
 import { signUp } from "@/features/auth/index.ts";
-import { phoneValidator } from "@/utils/phoneValidator.ts";
+import { phoneValidator } from "@/shared/utils/phoneValidator.ts";
 
 const {
   MIN_CHAR_LOGIN,
