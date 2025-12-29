@@ -1,8 +1,8 @@
-import { Todo } from "@/components/Todo/Todo";
-import { ITodoList } from "@/types/types";
+import { TIME } from "@/shared/constants/constants.tsx";
+import { ITodoList } from "@/shared/types/types.tsx";
 import { List } from "antd";
 import { FC, useEffect, useState } from "react";
-import { TIME } from "@/constants/constants";
+import { Todo } from "../Todo/Todo.tsx";
 
 export const TodoList: FC<ITodoList> = ({ todoList, getData }) => {
   const [interval, setInterval] = useState<number | undefined>();

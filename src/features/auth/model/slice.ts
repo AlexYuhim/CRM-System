@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { logOut, refreshToken, signIn, signUp } from "./thunks.ts";
 
-import { UserRegistration } from "@/types/types.ts";
+import { UserRegistration } from "@/shared/types/types.tsx";
 import { tokenManager } from "@/ducks/TokenManager.ts";
 
 interface Auth {

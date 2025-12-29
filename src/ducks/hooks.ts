@@ -6,7 +6,7 @@ import {
 } from "react-redux";
 import { UnknownAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { RootState } from "./store";
+import { RootState } from "./store.ts";
 
 export const useAppDispatch = useDispatch<
   ThunkDispatch<RootState, undefined, UnknownAction>

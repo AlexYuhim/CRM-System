@@ -1,9 +1,9 @@
-import { AuthData, Token, UserRegistration } from "@/types/types.tsx";
+import { AuthData, Token, UserRegistration } from "@/shared/types/types.tsx";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import axios from "axios";
 import { AppThunkConfig } from "@/ducks/store.ts";
-import { apiAuth } from "@/shared/api/axiosInstance.ts";
+import { apiAuth } from "@/shared/api/http-auth/axiosInstance.ts";
 import { tokenManager } from "@/ducks/TokenManager.ts";
 
 export const signUp = createAsyncThunk<

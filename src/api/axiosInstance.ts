@@ -1,5 +1,4 @@
-import { API_URL } from "@/constants/constants.tsx";
-import { tokenManager } from "@/ducks/TokenManager.ts";
+import { API_URL } from "@/shared/constants/constants.tsx";
 
 import axios from "axios";
 
