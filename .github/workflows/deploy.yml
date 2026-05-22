@@ -1,4 +1,6 @@
 name: Deploy React App to Timeweb
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   push:
@@ -20,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build React app
+      - name: Build React app (Vite)
         run: npm run build
 
       - name: Install sshpass
@@ -38,10 +40,10 @@ jobs:
           # Создаём папку, если её нет
           sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p $TARGET_DIR"
 
-          # Деплоим содержимое папки build
+          # Деплоим содержимое папки dist (НЕ build!)
           sshpass -p "${{ secrets.SSH_PASSWORD }}" rsync -avz --delete \
             --exclude '.git*' \
             --exclude 'node_modules' \
             --exclude '.env' \
             -e "ssh -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
-            ./build/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$TARGET_DIR/
+            ./dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$TARGET_DIR/
