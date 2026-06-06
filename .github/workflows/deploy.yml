@@ -1,93 +1,115 @@
 name: CI/CD Pipeline
 
 on:
-  # Запуск тестов при создании/обновлении Pull Request
-  pull_request:
-    branches: [dev, master]
-    types: [opened, synchronize, reopened]
-
-  # Деплой ПОСЛЕ мержа (когда код попадает в ветку)
   push:
-    branches: [master, dev]
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    branches:
+      - "feature/**"
+  pull_request:
+    branches: [dev, main]
+    types: [closed]
 
 jobs:
-  # ============================================
-  # JOB 1: ТЕСТЫ (запускаются на Pull Request)
-  # ============================================
-  test:
-    name: Run Tests
+  # ============= ТЕСТЫ ПРИ ПУШЕ В FEATURE (В DOCKER) =============
+  tests-feature:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
+    container:
+      image: node:20-alpine # легковесный Docker контейнер с Node.js 20
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+      # npm уже установлен в контейнере, не нужно ничего настраивать
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter (если есть)
-        run: npm run lint || echo "No linter configured"
-
-      - name: Run tests (если есть)
-        run: npm run test || echo "No tests configured"
-
-      - name: Build project (проверяем, что сборка проходит)
-        run: npm run build
-
-  # ============================================
-  # JOB 2: ДЕПЛОЙ (запускается ПОСЛЕ мержа)
-  # ============================================
-  deploy:
-    name: Deploy to Hosting
+  # ============= ТЕСТЫ ПОСЛЕ МЕРЖА PR (В DOCKER) =============
+  tests-after-merge:
     runs-on: ubuntu-latest
-    needs: test
-    if: success() && github.event_name == 'push'
-
+    container:
+      image: node:20-alpine
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: "20"
+          ref: ${{ github.event.pull_request.base.ref }}
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
 
-      - name: Build project
-        run: npm run build
+  # ============= СБОРКА (В DOCKER) =============
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-alpine
+    needs: tests-after-merge
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
 
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+      - run: npm ci
+      - run: npm run build
 
-      - name: Deploy to Timeweb
-        run: |
-          # Определяем целевой сервер в зависимости от ветки
-          if [ "${{ github.ref_name }}" = "master" ]; then
-            TARGET_DIR="/home/c/cy20187/web-use/public_html"
-            echo "🚀 Deploying to PRODUCTION (web-use.ru)"
-          else
-            TARGET_DIR="/home/c/cy20187/dev.web-use/public_html"
-            echo "🚀 Deploying to DEVELOPMENT (dev.web-use.ru)"
-          fi
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.event.pull_request.base.ref }}
+          path: dist/
+          retention-days: 1
 
-          # Создаём папку, если её нет
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p $TARGET_DIR"
+  # ============= ДЕПЛОЙ НА DEV (БЕЗ DOCKER - НУЖЕН SSH) =============
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: build
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'dev'
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-dev
 
-          # Деплоим
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" rsync -avz --delete \
-            --exclude '.git*' \
-            --exclude 'node_modules' \
-            --exclude '.env' \
-            -e "ssh -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
-            ./dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$TARGET_DIR/
+      - name: Deploy to dev domain
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: "."
+          target: "/home/c/cy20187/dev.web-use/public_html/"
+          strip_components: 0
+
+  # ============= ДЕПЛОЙ НА PROD (БЕЗ DOCKER - НУЖЕН SSH) =============
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: build
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main'
+    environment: production # ручной запуск на прод
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-main
+
+      - name: Deploy to production domain
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: "."
+          target: "/home/c/cy20187/web-use/public_html/"
+          strip_components: 0
